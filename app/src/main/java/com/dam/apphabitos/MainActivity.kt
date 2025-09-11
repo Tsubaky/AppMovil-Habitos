@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.dam.apphabitos.ui.theme.AppHabitosTheme
+import com.dam.apphabitos.ui.login.LoginScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,9 +21,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppHabitosTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Proyecto",
-                        modifier = Modifier.padding(innerPadding)
+                    LoginScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        onLogin = { email, password ->
+                            println("Usuario: $email, Contraseña: $password")
+                        }
                     )
                 }
             }
