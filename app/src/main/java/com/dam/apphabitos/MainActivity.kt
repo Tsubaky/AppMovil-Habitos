@@ -10,8 +10,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.dam.apphabitos.ui.theme.AppHabitosTheme
+
+import android.content.Intent
+import androidx.compose.material3.Button
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,9 +22,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppHabitosTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Proyecto",
-                        modifier = Modifier.padding(innerPadding)
+                    MainScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        onRegisterClick = {
+                            val intent = Intent(this, RegisterActivity::class.java)
+                            startActivity(intent)
+                        }
                     )
                 }
             }
@@ -31,17 +36,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
+fun MainScreen(modifier: Modifier = Modifier, onRegisterClick: () -> Unit) {
+    Button(
+        onClick = onRegisterClick,
         modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AppHabitosTheme {
-        Greeting("Android")
+    ) {
+        Text("Ir a Registro")
     }
 }
