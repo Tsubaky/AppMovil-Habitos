@@ -3,9 +3,9 @@ package com.dam.apphabitos
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-
 import android.content.Context
 import android.content.Intent
 class RegisterActivity : AppCompatActivity() {
@@ -17,6 +17,7 @@ class RegisterActivity : AppCompatActivity() {
         val etUsername = findViewById<EditText>(R.id.etUsername)
         val etPassword = findViewById<EditText>(R.id.etPassword)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
+        val tvGoLogin = findViewById<TextView>(R.id.tvGoLogin)
 
         btnRegister.setOnClickListener {
             val username = etUsername.text.toString()
@@ -35,6 +36,13 @@ class RegisterActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        //Código para redirigir a Login
+        tvGoLogin.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 }
