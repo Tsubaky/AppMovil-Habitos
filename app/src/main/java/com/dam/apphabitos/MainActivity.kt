@@ -18,17 +18,13 @@ class MainActivity : AppCompatActivity() {
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val btnGoRegister = findViewById<Button>(R.id.btnGoRegister)
 
+        // POR AHORA: aceptar cualquier usuario/contraseña y navegar a HomeActivity
         btnLogin.setOnClickListener {
-            val prefs = getSharedPreferences("UserData", Context.MODE_PRIVATE)
-            val savedUser = prefs.getString("username", "")
-            val savedPass = prefs.getString("password", "")
-
-            if (etUsername.text.toString() == savedUser &&
-                etPassword.text.toString() == savedPass) {
-                Toast.makeText(this, "Login exitoso", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
-            }
+            // Si quieres pasar el username a la HomeActivity (para mostrar "Alex Turner" dinámicamente)
+            val intent = Intent(this, HomeActivity::class.java)
+            intent.putExtra("username", etUsername.text.toString())
+            startActivity(intent)
+            finish()
         }
 
         btnGoRegister.setOnClickListener {

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="Home" />
+    <item
+        android:id="@+id/nav_calendar"
+        android:icon="@drawable/ic_calendar_today"
+        android:title="Calendar" />
+    <item
+        android:id="@+id/nav_stats"
+        android:icon="@drawable/ic_show_chart"
+        android:title="Stats" />
+    <item
+        android:id="@+id/nav_timer"
+        android:icon="@drawable/ic_timer"
+        android:title="Timer" />
+</menu>
