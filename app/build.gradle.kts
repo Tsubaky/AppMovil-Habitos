@@ -40,7 +40,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -49,11 +48,18 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation("com.google.android.material:material:1.9.0")
+    implementation(libs.material) // com.google.android.material:material:1.11.0
+
+    // ✅ Opción 1: Calendario Compose moderno
+    implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.2.1")
+
+    // ❌ Si prefieres usar XML clásico, comenta la anterior y descomenta esta:
+    // implementation("com.prolificinteractive:material-calendarview:1.4.3") {
+    //     exclude group: "com.android.support"
+    // }
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -61,5 +67,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 }

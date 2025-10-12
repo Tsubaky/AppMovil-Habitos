@@ -1,5 +1,6 @@
 package com.dam.apphabitos
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -26,10 +27,22 @@ class HomeActivity : AppCompatActivity() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         bottomNav.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.nav_home -> true
-                R.id.nav_calendar -> { Toast.makeText(this, "Calendario", Toast.LENGTH_SHORT).show(); true }
-                R.id.nav_stats -> { Toast.makeText(this, "Estadísticas", Toast.LENGTH_SHORT).show(); true }
-                R.id.nav_timer -> { Toast.makeText(this, "Temporizador", Toast.LENGTH_SHORT).show(); true }
+                R.id.nav_home -> {
+                    // Ya estás en Home
+                    true
+                }
+                R.id.nav_calendar -> {
+                    startActivity(Intent(this, CalendarActivity::class.java))
+                    true
+                }
+//                R.id.nav_stats -> {
+//                    startActivity(Intent(this, StatisticsActivity::class.java))
+//                    true
+//                }
+//                R.id.nav_timer -> {
+//                    startActivity(Intent(this, PomodoroActivity::class.java))
+//                    true
+//                }
                 else -> false
             }
         }
