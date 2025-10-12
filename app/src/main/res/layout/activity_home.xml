@@ -252,7 +252,7 @@
                 android:layout_height="56dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
-                android:text="+  Add New Habit"
+                android:text="+Add New Habit"
                 android:textSize="16sp"
                 android:backgroundTint="@color/blue_accent"
                 android:textColor="@color/white"
