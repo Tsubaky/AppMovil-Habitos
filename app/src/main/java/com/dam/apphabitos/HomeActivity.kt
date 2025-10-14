@@ -9,12 +9,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class HomeActivity : AppCompatActivity() {
+    private lateinit var bottomNav: BottomNavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         supportActionBar?.hide()
 
-        // Mostrar username si fue pasado (si está vacío, muestra "Alex Turner")
         val tvName = findViewById<TextView>(R.id.tvName)
         val username = intent.getStringExtra("username")
         tvName.text = if (!username.isNullOrEmpty()) username else "Alex Turner"
@@ -24,27 +25,49 @@ class HomeActivity : AppCompatActivity() {
             Toast.makeText(this, "Agregar hábito (implementa aquí)", Toast.LENGTH_SHORT).show()
         }
 
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        bottomNav = findViewById(R.id.bottomNavigation)
+        bottomNav.selectedItemId = R.id.nav_home
+
         bottomNav.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {
                     // Ya estás en Home
                     true
                 }
+                R.id.nav_timer -> {
+                    // Abrir PomodoroActivity (manteniendo comportamiento de develop)
+                    val intent = Intent(this, PomodoroActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
                 R.id.nav_calendar -> {
+                    // Abrir CalendarActivity (comportamiento agregado desde feat/tomas-calendar)
                     startActivity(Intent(this, CalendarActivity::class.java))
                     true
                 }
-//                R.id.nav_stats -> {
-//                    startActivity(Intent(this, StatisticsActivity::class.java))
-//                    true
-//                }
-//                R.id.nav_timer -> {
-//                    startActivity(Intent(this, PomodoroActivity::class.java))
-//                    true
-//                }
+                R.id.nav_stats -> {
+                    // Mantengo el toast de develop; puedes cambiar por startActivity si existe StatisticsActivity
+                    Toast.makeText(this, "Estadísticas", Toast.LENGTH_SHORT).show()
+                    true
+                }
                 else -> false
             }
+        }
+    }
+
+    // Se llama cuando la actividad ya está en top y recibe un nuevo Intent
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        // Actualizamos el intent de la Activity para que getIntent() devuelva el nuevo Intent
+        setIntent(intent)
+
+        val cameFromBack = intent.getBooleanExtra("fromBack", false)
+        if (cameFromBack) {
+            bottomNav.selectedItemId = R.id.nav_home
+            // opcional: limpiar el extra para no reutilizarlo después
+            this.intent.removeExtra("fromBack")
         }
     }
 }

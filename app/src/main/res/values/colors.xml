@@ -24,4 +24,5 @@
     <color name="white">#FFFFFF</color>
     <color name="nav_background">#0C1A20</color>
     <color name="nav_item_tint">#7FAECF</color>
+    <color name="gray_text">#8899AA</color>
 </resources>
