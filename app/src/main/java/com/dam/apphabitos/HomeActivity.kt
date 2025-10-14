@@ -30,8 +30,12 @@ class HomeActivity : AppCompatActivity() {
 
         bottomNav.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.nav_home -> true
+                R.id.nav_home -> {
+                    // Ya estás en Home
+                    true
+                }
                 R.id.nav_timer -> {
+                    // Abrir PomodoroActivity (manteniendo comportamiento de develop)
                     val intent = Intent(this, PomodoroActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                     startActivity(intent)
@@ -39,10 +43,12 @@ class HomeActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_calendar -> {
-                    Toast.makeText(this, "Calendario", Toast.LENGTH_SHORT).show()
+                    // Abrir CalendarActivity (comportamiento agregado desde feat/tomas-calendar)
+                    startActivity(Intent(this, CalendarActivity::class.java))
                     true
                 }
                 R.id.nav_stats -> {
+                    // Mantengo el toast de develop; puedes cambiar por startActivity si existe StatisticsActivity
                     Toast.makeText(this, "Estadísticas", Toast.LENGTH_SHORT).show()
                     true
                 }
