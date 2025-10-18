@@ -1,11 +1,9 @@
 package com.dam.apphabitos
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
@@ -20,9 +18,17 @@ class MainActivity : AppCompatActivity() {
 
         // POR AHORA: aceptar cualquier usuario/contraseña y navegar a HomeActivity
         btnLogin.setOnClickListener {
-            // Si quieres pasar el username a la HomeActivity (para mostrar "Alex Turner" dinámicamente)
-            val intent = Intent(this, HomeActivity::class.java)
-            intent.putExtra("username", etUsername.text.toString())
+            val username = etUsername.text.toString().trim()
+            if (username.isEmpty()) {
+                etUsername.error = "Ingresa un usuario"
+                return@setOnClickListener
+            }
+
+            val intent = Intent(this, HomeActivity::class.java).apply {
+                putExtra("username", username)
+                // Evitamos que el Login quede en la pila
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
             startActivity(intent)
             finish()
         }
