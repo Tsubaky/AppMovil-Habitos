@@ -7,15 +7,14 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class PomodoroActivity : AppCompatActivity() {
 
-    //  Declaración de vistas (componentes del layout)
+    // Vistas
     private lateinit var tvTimer: TextView
     private lateinit var tvMode: TextView
     private lateinit var btnStart: Button
@@ -25,14 +24,13 @@ class PomodoroActivity : AppCompatActivity() {
     private lateinit var btnLongBreak: Button
     private lateinit var btnBack: ImageView
 
-    //  Variables del temporizador
-    private var timer: CountDownTimer? = null     // Objeto que maneja la cuenta regresiva
-    private var isRunning = false                 // Indica si el temporizador está activo
-    private var currentMode = TimerMode.FOCUS     // Modo actual (por defecto: enfocado)
-    private var timeInMinutes = 45                // Minutos configurados
-    private var remainingMillis: Long = 0L        // Milisegundos restantes
+    // Temporizador
+    private var timer: CountDownTimer? = null
+    private var isRunning = false
+    private var currentMode = TimerMode.FOCUS
+    private var timeInMinutes = 45
+    private var remainingMillis: Long = 0L
 
-    //  Modos del temporizador (enfocado, descanso corto, descanso largo)
     enum class TimerMode(val displayName: String, val minutes: Int) {
         FOCUS("Enfocado", 45),
         SHORT_BREAK("Descanso corto", 5),
@@ -43,49 +41,60 @@ class PomodoroActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pomodoro)
 
-        // --- Configurar barra de navegación inferior ---
-        val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
-        bottomNavigation.selectedItemId = R.id.nav_timer // Marca el ícono de temporizador
+        // Recuperar username (si viene)
+        val username = intent.getStringExtra("username") ?: "Usuario"
 
-        // Acciones al seleccionar un ítem del menú inferior
+        // Configurar bottom navigation (marca el ítem)
+        val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        bottomNavigation.selectedItemId = R.id.nav_timer
+
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    // Volver al Home
-                    val intent = Intent(this, HomeActivity::class.java)
-                    intent.putExtra("fromBack", true)
-                    // Evita duplicar actividades en el stack
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    val intent = Intent(this, HomeActivity::class.java).apply {
+                        putExtra("username", username)
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    }
                     startActivity(intent)
                     overridePendingTransition(0, 0)
                     finish()
                     true
                 }
-                R.id.nav_timer -> true // Ya estamos en esta pantalla
+                R.id.nav_timer -> true
+                R.id.nav_calendar -> {
+                    val intent = Intent(this, CalendarActivity::class.java).apply {
+                        putExtra("username", username)
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    }
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
+                }
                 else -> false
             }
         }
 
-        // --- Inicializar vistas y comportamiento ---
+        // Inicializar vistas (debe hacerse después de setContentView)
         initViews()
         setupTabButtons()
         updateTimerDisplay()
 
-        // --- Manejo del botón físico "Atrás" ---
+        // Manejo del botón físico "Atrás" (traer Home)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val intent = Intent(this@PomodoroActivity, HomeActivity::class.java)
-                intent.putExtra("fromBack", true)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                val intent = Intent(this@PomodoroActivity, HomeActivity::class.java).apply {
+                    putExtra("username", username)
+                    addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                }
                 startActivity(intent)
-                // Animación suave al volver
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                 finish()
             }
         })
     }
 
-    //  Inicializar las vistas y sus eventos
+    // Inicializa las vistas y listeners básicos
     private fun initViews() {
         tvTimer = findViewById(R.id.tvTimer)
         tvMode = findViewById(R.id.tvMode)
@@ -96,61 +105,33 @@ class PomodoroActivity : AppCompatActivity() {
         btnLongBreak = findViewById(R.id.btnLongBreak)
         btnBack = findViewById(R.id.btnBack)
 
-        // Botón de retroceso (flecha)
         btnBack.setOnClickListener {
-            val intent = Intent(this, HomeActivity::class.java)
-            intent.putExtra("fromBack", true)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            // Si el usuario pulsa la flecha, volvemos a Home
+            val intent = Intent(this, HomeActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            }
             startActivity(intent)
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish()
         }
 
-        // Botón de iniciar/detener
         btnStart.setOnClickListener {
             if (!isRunning) startTimer() else stopTimer()
         }
 
-        // Botón de reiniciar
-        btnReset.setOnClickListener {
-            resetTimer()
-        }
+        btnReset.setOnClickListener { resetTimer() }
 
-        // Permitir que el usuario cambie los minutos tocando el número
         tvTimer.setOnClickListener {
-            if (!isRunning)
-                showMinuteInputDialog()
-            else
-                Toast.makeText(this, "No puedes cambiar el tiempo mientras corre el temporizador", Toast.LENGTH_SHORT).show()
+            if (!isRunning) {
+                // permitir cambio de minutos si quieres (puedes implementar dialog)
+                Toast.makeText(this, "Mantén presionado o implementa diálogo para cambiar minutos", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "No puedes cambiar el tiempo mientras corre", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
-    //  Muestra un diálogo para cambiar la duración del temporizador
-    private fun showMinuteInputDialog() {
-        val editText = android.widget.EditText(this)
-        editText.hint = "Minutos"
-        editText.inputType = android.text.InputType.TYPE_CLASS_NUMBER
-        editText.setText(timeInMinutes.toString())
-
-        AlertDialog.Builder(this)
-            .setTitle("Cambiar duración")
-            .setMessage("Ingresa la cantidad de minutos:")
-            .setView(editText)
-            .setPositiveButton("Aceptar") { _, _ ->
-                val newMinutes = editText.text.toString().toIntOrNull()
-                if (newMinutes != null && newMinutes > 0) {
-                    timeInMinutes = newMinutes
-                    updateTimerDisplay()
-                    Toast.makeText(this, "Duración cambiada a $newMinutes min", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "Ingresa un número válido", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
-    }
-
-    //  Configurar los botones de modo (enfocado / descansos)
+    // Configura los botones de modo (Focus / Short / Long)
     private fun setupTabButtons() {
         btnFocus.setOnClickListener { if (!isRunning) switchMode(TimerMode.FOCUS) }
         btnShortBreak.setOnClickListener { if (!isRunning) switchMode(TimerMode.SHORT_BREAK) }
@@ -159,7 +140,6 @@ class PomodoroActivity : AppCompatActivity() {
         updateTabSelection()
     }
 
-    //  Cambia el modo y actualiza la interfaz
     private fun switchMode(mode: TimerMode) {
         currentMode = mode
         timeInMinutes = mode.minutes
@@ -168,18 +148,15 @@ class PomodoroActivity : AppCompatActivity() {
         updateTabSelection()
     }
 
-    //  Cambia el color del botón seleccionado (modo activo)
     private fun updateTabSelection() {
         val grayColor = ContextCompat.getColor(this, R.color.gray_text)
         val selectedColor = ContextCompat.getColor(this, android.R.color.white)
 
-        // Todos los botones a gris
         listOf(btnFocus, btnShortBreak, btnLongBreak).forEach {
             it.setBackgroundResource(android.R.color.transparent)
             it.setTextColor(grayColor)
         }
 
-        // Botón activo a blanco y con fondo azul
         when (currentMode) {
             TimerMode.FOCUS -> {
                 btnFocus.setBackgroundResource(R.drawable.tab_selected)
@@ -196,20 +173,18 @@ class PomodoroActivity : AppCompatActivity() {
         }
     }
 
-    //  Muestra el tiempo en formato mm:ss
     private fun updateTimerDisplay() {
-        val minutes = (remainingMillis / 1000 / 60).toInt()
         if (remainingMillis > 0) {
+            val minutes = (remainingMillis / 1000 / 60).toInt()
             val seconds = ((remainingMillis / 1000) % 60).toInt()
             tvTimer.text = String.format("%02d:%02d", minutes, seconds)
         } else {
             tvTimer.text = String.format("%02d:00", timeInMinutes)
         }
+        tvMode.text = currentMode.displayName
     }
 
-    //  Inicia el temporizador
     private fun startTimer() {
-        // Si hay tiempo restante, continúa desde ahí
         val totalMillis = if (remainingMillis > 0) remainingMillis else timeInMinutes * 60 * 1000L
         btnStart.text = "Detener"
         isRunning = true
@@ -231,14 +206,12 @@ class PomodoroActivity : AppCompatActivity() {
         }.start()
     }
 
-    //  Detiene el temporizador sin reiniciarlo
     private fun stopTimer() {
         timer?.cancel()
         btnStart.text = "Continuar"
         isRunning = false
     }
 
-    //  Reinicia el temporizador desde cero
     private fun resetTimer() {
         timer?.cancel()
         remainingMillis = 0L
@@ -248,24 +221,20 @@ class PomodoroActivity : AppCompatActivity() {
         updateTimerDisplay()
     }
 
-    //  Deshabilita los botones de modo mientras corre el temporizador
     private fun disableTabs() {
         btnFocus.isEnabled = false
         btnShortBreak.isEnabled = false
         btnLongBreak.isEnabled = false
     }
 
-    //  Habilita los botones de modo nuevamente
     private fun enableTabs() {
         btnFocus.isEnabled = true
         btnShortBreak.isEnabled = true
         btnLongBreak.isEnabled = true
     }
 
-    //  Cancela el temporizador al destruir la actividad (buena práctica)
     override fun onDestroy() {
         super.onDestroy()
         timer?.cancel()
     }
 }
-

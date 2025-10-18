@@ -17,6 +17,7 @@
         android:fillViewport="true">
 
         <LinearLayout
+            android:id="@+id/llContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -50,7 +51,7 @@
                         android:id="@+id/tvWelcome"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Welcome back,"
+                        android:text="BIENVENIDO"
                         android:textColor="@color/light_text"
                         android:textSize="14sp"/>
 
@@ -65,198 +66,64 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Title -->
-            <TextView
-                android:id="@+id/tvToday"
-                android:layout_width="wrap_content"
+            <!-- Title + controls row -->
+            <LinearLayout
+                android:id="@+id/rowTitleControls"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Today's Habits"
-                android:textColor="@color/primary_text"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:paddingBottom="12dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingBottom="12dp">
 
-            <!-- Habit items: usar MaterialCardView para estilo -->
-            <!-- Repite o crea dinámicamente luego; pongo 5 de ejemplo -->
-            <androidx.cardview.widget.CardView
+                <TextView
+                    android:id="@+id/tvToday"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Lista de Hoy"
+                    android:textColor="@color/primary_text"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+            <!-- RecyclerView para mostrar hábitos -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvHabits"
                 android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="12dp"
-                app:cardBackgroundColor="@color/card_background"
-                app:cardElevation="2dp">
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:id="@+id/ivHabit1"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:src="@drawable/ic_fitness_center"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/icon_bg"
-                        android:padding="8dp"/>
-
-                    <TextView
-                        android:id="@+id/tvHabit1Title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Morning Exercise"
-                        android:textColor="@color/primary_text"
-                        android:textSize="16sp"
-                        android:layout_toEndOf="@id/ivHabit1"
-                        android:layout_marginStart="12dp"
-                        android:layout_alignTop="@id/ivHabit1"/>
-
-                    <TextView
-                        android:id="@+id/tvHabit1Pct"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="100%"
-                        android:textColor="@color/light_text"
-                        android:textSize="12sp"
-                        android:layout_toEndOf="@id/ivHabit1"
-                        android:layout_marginStart="12dp"
-                        android:layout_below="@id/tvHabit1Title"/>
-
-                    <ImageView
-                        android:id="@+id/ivCheckbox1"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:src="@drawable/ic_check_circle"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"/>
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Habit 2 -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="12dp"
-                app:cardBackgroundColor="@color/card_background"
-                app:cardElevation="2dp">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:id="@+id/ivHabit2"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:src="@drawable/ic_menu_book"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/icon_bg"
-                        android:padding="8dp"/>
-
-                    <TextView
-                        android:id="@+id/tvHabit2Title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Reading"
-                        android:textColor="@color/primary_text"
-                        android:textSize="16sp"
-                        android:layout_toEndOf="@id/ivHabit2"
-                        android:layout_marginStart="12dp"
-                        android:layout_alignTop="@id/ivHabit2"/>
-
-                    <TextView
-                        android:id="@+id/tvHabit2Pct"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="75%"
-                        android:textColor="@color/light_text"
-                        android:textSize="12sp"
-                        android:layout_toEndOf="@id/ivHabit2"
-                        android:layout_marginStart="12dp"
-                        android:layout_below="@id/tvHabit2Title"/>
-
-                    <ImageView
-                        android:id="@+id/ivCheckbox2"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:src="@drawable/ic_checkbox_blank"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"/>
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Habit 3 -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="12dp"
-                app:cardBackgroundColor="@color/card_background"
-                app:cardElevation="2dp">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:id="@+id/ivHabit3"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:src="@drawable/ic_self_improvement"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/icon_bg"
-                        android:padding="8dp"/>
-
-                    <TextView
-                        android:id="@+id/tvHabit3Title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Meditation"
-                        android:textColor="@color/primary_text"
-                        android:textSize="16sp"
-                        android:layout_toEndOf="@id/ivHabit3"
-                        android:layout_marginStart="12dp"
-                        android:layout_alignTop="@id/ivHabit3"/>
-
-                    <TextView
-                        android:id="@+id/tvHabit3Pct"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="50%"
-                        android:textColor="@color/light_text"
-                        android:textSize="12sp"
-                        android:layout_toEndOf="@id/ivHabit3"
-                        android:layout_marginStart="12dp"
-                        android:layout_below="@id/tvHabit3Title"/>
-
-                    <ImageView
-                        android:id="@+id/ivCheckbox3"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:src="@drawable/ic_checkbox_blank"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"/>
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Add New Habit button -->
-            <Button
-                android:id="@+id/btnAddHabit"
+            <!-- Row with counter (left) and FAB (right) -->
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                android:text="+Add New Habit"
-                android:textSize="16sp"
-                android:backgroundTint="@color/blue_accent"
-                android:textColor="@color/white"
-                android:background="@drawable/rounded_button"/>
+                android:layout_marginBottom="8dp">
+
+                <!-- Contador a la izquierda -->
+                <TextView
+                    android:id="@+id/tvCounter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_text"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true"/>
+
+                <!-- FAB morado a la derecha -->
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabAddHabit"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_add"
+                    app:backgroundTint="@color/purple_500"
+                    app:fabSize="normal"
+                    android:contentDescription="Agregar hábito" />
+            </RelativeLayout>
+
 
         </LinearLayout>
     </ScrollView>

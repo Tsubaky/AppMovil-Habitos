@@ -10,6 +10,8 @@ class CalendarActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calendar)
 
+        val username = intent.getStringExtra("username") ?: "Usuario"
+
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
 
         // Marcar el ítem actual como seleccionado
@@ -18,24 +20,24 @@ class CalendarActivity : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
+                    val i = Intent(this, HomeActivity::class.java).apply {
+                        putExtra("username", username)
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    }
+                    startActivity(i)
                     true
                 }
-                R.id.nav_calendar -> {
-                    // Ya estás en CalendarActivity, no hacer nada
+                R.id.nav_calendar -> true
+                R.id.nav_timer -> {
+                    val i = Intent(this, PomodoroActivity::class.java).apply {
+                        putExtra("username", username)
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    }
+                    startActivity(i)
                     true
                 }
-//                R.id.nav_stats -> {
-//                    startActivity(Intent(this, StatisticsActivity::class.java))
-//                    true
-//                }
-//                R.id.nav_timer -> {
-//                    startActivity(Intent(this, PomodoroActivity::class.java))
-//                    true
-//                }
                 else -> false
             }
         }
     }
 }
-

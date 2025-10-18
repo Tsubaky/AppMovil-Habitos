@@ -1,55 +1,83 @@
 package com.dam.apphabitos
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.view.LayoutInflater
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.dam.apphabitos.model.Habit
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var bottomNav: BottomNavigationView
+    private lateinit var db: DBHelper
+    private lateinit var adapter: HabitsAdapter
+    private lateinit var rvHabits: RecyclerView
+    private lateinit var tvCounter: TextView
+    private var completedCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         supportActionBar?.hide()
 
+        // --- Leer username pasado desde login (fallback "Usuario") ---
+        val username = intent.getStringExtra("username") ?: "Usuario"
         val tvName = findViewById<TextView>(R.id.tvName)
-        val username = intent.getStringExtra("username")
-        tvName.text = if (!username.isNullOrEmpty()) username else "Alex Turner"
+        tvName.text = username
+        // ----------------------------------------------------------
 
-        val btnAdd = findViewById<Button>(R.id.btnAddHabit)
-        btnAdd.setOnClickListener {
-            Toast.makeText(this, "Agregar hábito (implementa aquí)", Toast.LENGTH_SHORT).show()
+        // Inicializaciones
+        db = DBHelper(this)
+        tvCounter = findViewById(R.id.tvCounter)
+        rvHabits = findViewById(R.id.rvHabits)
+
+        adapter = HabitsAdapter(mutableListOf()) { habit, isChecked ->
+            // Al marcar/desmarcar actualizamos DB y contador
+            db.updateHabitCompleted(habit.id, if (isChecked) 1 else 0)
+            habit.completed = if (isChecked) 1 else 0
+            if (isChecked) completedCount++ else completedCount--
+            updateCounterUI()
         }
 
-        bottomNav = findViewById(R.id.bottomNavigation)
-        bottomNav.selectedItemId = R.id.nav_home
+        rvHabits.layoutManager = LinearLayoutManager(this)
+        rvHabits.adapter = adapter
 
-        bottomNav.setOnItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_home -> {
-                    // Ya estás en Home
-                    true
-                }
+        // Cargar datos
+        loadHabitsFromDb()
+
+        // FAB para abrir modal
+        val fab = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fabAddHabit)
+        fab.setOnClickListener { showAddHabitDialog() }
+
+        // Bottom navigation
+        bottomNav = findViewById(R.id.bottomNavigation)
+
+        // Listener: abrimos actividades y re-pasamos username. Usamos FLAG_ACTIVITY_REORDER_TO_FRONT
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> true
                 R.id.nav_timer -> {
-                    // Abrir PomodoroActivity (manteniendo comportamiento de develop)
-                    val intent = Intent(this, PomodoroActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    startActivity(intent)
-                    overridePendingTransition(0, 0)
+                    val i = Intent(this, PomodoroActivity::class.java).apply {
+                        putExtra("username", username)
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    }
+                    startActivity(i)
                     true
                 }
                 R.id.nav_calendar -> {
-                    // Abrir CalendarActivity (comportamiento agregado desde feat/tomas-calendar)
-                    startActivity(Intent(this, CalendarActivity::class.java))
+                    val i = Intent(this, CalendarActivity::class.java).apply {
+                        putExtra("username", username)
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    }
+                    startActivity(i)
                     true
                 }
                 R.id.nav_stats -> {
-                    // Mantengo el toast de develop; puedes cambiar por startActivity si existe StatisticsActivity
-                    Toast.makeText(this, "Estadísticas", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Estadísticas (pendiente)", Toast.LENGTH_SHORT).show()
                     true
                 }
                 else -> false
@@ -57,17 +85,89 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    // Se llama cuando la actividad ya está en top y recibe un nuevo Intent
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        // Actualizamos el intent de la Activity para que getIntent() devuelva el nuevo Intent
-        setIntent(intent)
-
-        val cameFromBack = intent.getBooleanExtra("fromBack", false)
-        if (cameFromBack) {
-            bottomNav.selectedItemId = R.id.nav_home
-            // opcional: limpiar el extra para no reutilizarlo después
-            this.intent.removeExtra("fromBack")
-        }
+    private fun updateCounterUI() {
+        tvCounter.text = completedCount.toString()
     }
+
+    private fun loadHabitsFromDb() {
+        val list = db.getAllHabits()
+        adapter.updateList(list)
+        // calcular completados
+        completedCount = list.count { it.completed == 1 }
+        updateCounterUI()
+    }
+
+    private fun showAddHabitDialog() {
+        val inflater = LayoutInflater.from(this)
+        val view = inflater.inflate(R.layout.dialog_add_habit, null)
+        val etName = view.findViewById<EditText>(R.id.etHabitName)
+        val gvEmojis = view.findViewById<GridView>(R.id.gvEmojis)
+        val btnAdd = view.findViewById<Button>(R.id.btnAdd)
+        val btnCancel = view.findViewById<Button>(R.id.btnCancel)
+
+        // Lista de emojis ejemplo (puedes añadir más)
+        val emojis = listOf("🔥","🌙","💪","🧘","📚","☕","🏃","🍎","🛌","🧹","🎧","✍️")
+
+        // Selección única: guardamos solo el índice seleccionado
+        var selectedIndex = -1
+
+        // Adapter simple para emojis (TextView)
+        val emojiAdapter = object : BaseAdapter() {
+            override fun getCount() = emojis.size
+            override fun getItem(position: Int) = emojis[position]
+            override fun getItemId(position: Int) = position.toLong()
+            override fun getView(position: Int, convertView: android.view.View?, parent: android.view.ViewGroup?): android.view.View {
+                val tv = (convertView as? TextView) ?: TextView(this@HomeActivity).apply {
+                    val pad = (8 * resources.displayMetrics.density).toInt()
+                    setPadding(pad, pad, pad, pad)
+                    textSize = 20f
+                    gravity = android.view.Gravity.CENTER
+                }
+                tv.text = emojis[position]
+                // Fondo si está seleccionado (selección única)
+                if (position == selectedIndex) {
+                    tv.setBackgroundResource(android.R.drawable.dialog_holo_light_frame)
+                } else {
+                    tv.setBackgroundResource(0)
+                }
+                return tv
+            }
+        }
+
+        gvEmojis.adapter = emojiAdapter
+
+        gvEmojis.setOnItemClickListener { _, _, position, _ ->
+            // Selección única: si tocas el mismo índice lo deseleccionas, si no lo seleccionas
+            selectedIndex = if (selectedIndex == position) -1 else position
+            emojiAdapter.notifyDataSetChanged()
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(view)
+            .create()
+
+        btnCancel.setOnClickListener { dialog.dismiss() }
+        btnAdd.setOnClickListener {
+            val name = etName.text.toString().trim()
+            if (name.isEmpty()) {
+                etName.error = "Ingresa un nombre"
+                return@setOnClickListener
+            }
+            // Si no hay emoji seleccionado, puedes forzar a elegir uno o dejar vacío
+            val chosen = if (selectedIndex != -1) emojis[selectedIndex] else ""
+
+            val habit = Habit(name = name, emojis = chosen, completed = 0)
+            val id = db.insertHabit(habit)
+            habit.id = id
+            adapter.add(habit)
+            dialog.dismiss()
+            // recargar contador (no cambia hasta marcar)
+            updateCounterUI()
+            Toast.makeText(this, "Hábito añadido", Toast.LENGTH_SHORT).show()
+        }
+
+        dialog.show()
+
+    }
+
 }
