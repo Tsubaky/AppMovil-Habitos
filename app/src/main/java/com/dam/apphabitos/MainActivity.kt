@@ -4,33 +4,46 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var db: DBHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        db = DBHelper(this)
 
         val etUsername = findViewById<EditText>(R.id.etUsername)
         val etPassword = findViewById<EditText>(R.id.etPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val btnGoRegister = findViewById<Button>(R.id.btnGoRegister)
 
-        // POR AHORA: aceptar cualquier usuario/contraseña y navegar a HomeActivity
         btnLogin.setOnClickListener {
             val username = etUsername.text.toString().trim()
-            if (username.isEmpty()) {
-                etUsername.error = "Ingresa un usuario"
+            val password = etPassword.text.toString().trim()
+
+            if (username.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Ingresa usuario y contraseña.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val intent = Intent(this, HomeActivity::class.java).apply {
-                putExtra("username", username)
-                // Evitamos que el Login quede en la pila
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            //LA NUEVA LÓGICA DE AUTENTICACIÓN CON SQLite
+            val isAuthenticated = db.authenticateUser(username, password)
+
+            if (isAuthenticated) {
+                val intent = Intent(this, HomeActivity::class.java).apply {
+                    putExtra("username", username)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(this, "Usuario o contraseña incorrectos.", Toast.LENGTH_LONG).show()
             }
-            startActivity(intent)
-            finish()
         }
 
         btnGoRegister.setOnClickListener {

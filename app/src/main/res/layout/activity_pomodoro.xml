@@ -118,23 +118,26 @@
             android:background="@drawable/rounded_button"
             android:layout_margin="2dp"
             android:textAllCaps="false"
+            app:backgroundTint="@color/blue_accent"
             style="?android:attr/borderlessButtonStyle" />
 
         <!-- Botón de descanso corto -->
-        <Button
-            android:id="@+id/btnShortBreak"
-            android:layout_width="0dp"
-            android:layout_height="53dp"
-            android:layout_weight="1"
-            android:text="Descanso corto"
-            android:textColor="#8899AA"
-            android:textSize="14sp"
-            android:background="@android:color/transparent"
-            android:layout_margin="2dp"
-            android:textAllCaps="false"
-            style="?android:attr/borderlessButtonStyle" />
 
         <!-- Botón de descanso largo -->
+        <Button
+            android:id="@+id/btnShortBreak"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="53dp"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:text="Descanso corto"
+            android:textAllCaps="false"
+            android:textColor="#8899AA"
+            android:textSize="14sp"
+            app:backgroundTint="@color/blue_accent"/>
+
         <Button
             android:id="@+id/btnLongBreak"
             android:layout_width="0dp"
@@ -146,13 +149,14 @@
             android:background="@android:color/transparent"
             android:layout_margin="2dp"
             android:textAllCaps="false"
+            app:backgroundTint="@color/blue_accent"
             style="?android:attr/borderlessButtonStyle" />
     </LinearLayout>
 
     <!-- Botón para iniciar el temporizador -->
     <Button
         android:id="@+id/btnStart"
-        android:layout_width="0dp"
+        android:layout_width="180dp"
         android:layout_height="56dp"
         android:layout_marginTop="32dp"
         android:text="Comenzar"
@@ -164,12 +168,13 @@
         app:layout_constraintTop_toBottomOf="@id/tabLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"/>
+        app:layout_constraintHorizontal_bias="0.5"
+        app:backgroundTint="@color/blue_accent"/>
 
     <!-- Botón para reiniciar el temporizador -->
     <Button
         android:id="@+id/btnReset"
-        android:layout_width="0dp"
+        android:layout_width="180dp"
         android:layout_height="56dp"
         android:layout_marginTop="12dp"
         android:text="Reiniciar"
@@ -181,7 +186,8 @@
         app:layout_constraintTop_toBottomOf="@id/btnStart"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:backgroundTint="@color/blue_accent"/>
 
     <!-- Barra de navegación inferior -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
