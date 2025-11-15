@@ -20,19 +20,21 @@ class RegisterActivity : AppCompatActivity() {
         val tvGoLogin = findViewById<TextView>(R.id.tvGoLogin)
 
         btnRegister.setOnClickListener {
-            val username = etUsername.text.toString()
-            val password = etPassword.text.toString()
+            val username = etUsername.text.toString().trim()
+            val password = etPassword.text.toString().trim()
 
             if (username.isNotEmpty() && password.isNotEmpty()) {
-                val prefs = getSharedPreferences("UserData", Context.MODE_PRIVATE)
-                prefs.edit().apply {
-                    putString("username", username)
-                    putString("password", password)
-                    apply()
+                val db = DBHelper(this)
+
+                //INTENTAR REGISTRAR EL USUARIO EN SQLite
+                val result = db.registerUser(username, password)
+                if (result != -1L) {
+                    Toast.makeText(this, "Usuario registrado con éxito.", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                } else {
+                    Toast.makeText(this, "Error: El usuario ya existe o hubo un problema.", Toast.LENGTH_LONG).show()
                 }
-                Toast.makeText(this, "Usuario registrado", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
             } else {
                 Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show()
             }
