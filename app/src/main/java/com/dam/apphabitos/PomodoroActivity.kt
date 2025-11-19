@@ -23,6 +23,7 @@ class PomodoroActivity : AppCompatActivity() {
     private lateinit var btnShortBreak: Button
     private lateinit var btnLongBreak: Button
     private lateinit var btnBack: ImageView
+    private lateinit var bottomNav: BottomNavigationView
 
     // Temporizador
     private var timer: CountDownTimer? = null
@@ -41,34 +42,35 @@ class PomodoroActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pomodoro)
 
-        // Recuperar username (si viene)
         val username = intent.getStringExtra("username") ?: "Usuario"
 
-        // Configurar bottom navigation (marca el ítem)
-        val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
-        bottomNavigation.selectedItemId = R.id.nav_timer
+        bottomNav = findViewById(R.id.bottomNavigation)
 
-        bottomNavigation.setOnItemSelectedListener { item ->
+        bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    val intent = Intent(this, HomeActivity::class.java).apply {
+                    val i = Intent(this, HomeActivity::class.java).apply {
                         putExtra("username", username)
                         addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
                     }
-                    startActivity(intent)
-                    overridePendingTransition(0, 0)
-                    finish()
+                    startActivity(i)
                     true
                 }
                 R.id.nav_timer -> true
                 R.id.nav_calendar -> {
-                    val intent = Intent(this, CalendarActivity::class.java).apply {
+                    val i = Intent(this, CalendarActivity::class.java).apply {
                         putExtra("username", username)
                         addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
                     }
-                    startActivity(intent)
-                    overridePendingTransition(0, 0)
-                    finish()
+                    startActivity(i)
+                    true
+                }
+                R.id.nav_stats -> {
+                    val i = Intent(this, StatisticsActivity::class.java).apply {
+                        putExtra("username", username)
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    }
+                    startActivity(i)
                     true
                 }
                 else -> false

@@ -25,4 +25,6 @@
     <color name="nav_background">#0C1A20</color>
     <color name="nav_item_tint">#7FAECF</color>
     <color name="gray_text">#8899AA</color>
+    <color name="gris_oscuro">#1E293B</color>
+    <color name="gris_claro">#94A3B8</color>
 </resources>
