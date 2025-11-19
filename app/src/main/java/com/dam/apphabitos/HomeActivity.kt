@@ -77,7 +77,11 @@ class HomeActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_stats -> {
-                    Toast.makeText(this, "Estadísticas (pendiente)", Toast.LENGTH_SHORT).show()
+                    val i = Intent(this, StatisticsActivity::class.java).apply {
+                        putExtra("username", username)
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    }
+                    startActivity(i)
                     true
                 }
                 else -> false
