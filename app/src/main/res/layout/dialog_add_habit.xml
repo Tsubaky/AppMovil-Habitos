@@ -3,60 +3,99 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="16dp">
 
     <TextView
-        android:id="@+id/tvDialogTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Añadir hábito"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        android:text="Nombre del Hábito"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
 
     <EditText
         android:id="@+id/etHabitName"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Nombre del hábito"
-        android:inputType="textPersonName"
-        android:layout_marginTop="12dp"/>
+        android:layout_height="48dp"
+        android:hint="Ej: Hacer ejercicio"
+        android:inputType="text"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:layout_marginBottom="16dp" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Elige emoji (puedes seleccionar varios)"
-        android:layout_marginTop="12dp"/>
+        android:text="Selecciona un Emoji"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
 
-    <!-- Grid simple de emojis: cada item es un ToggleButton-like -->
     <GridView
         android:id="@+id/gvEmojis"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="120dp"
         android:numColumns="6"
-        android:verticalSpacing="8dp"
-        android:horizontalSpacing="8dp"
-        android:stretchMode="columnWidth"
-        android:layout_marginTop="8dp"/>
+        android:verticalSpacing="4dp"
+        android:horizontalSpacing="4dp"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fecha y Hora"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/tvDateTimeDisplay"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical|start"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="Selecciona fecha y hora"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnSelectDateTime"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:text="📅"
+            android:textSize="24sp"
+            android:background="?attr/colorPrimary" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="end"
-        android:layout_marginTop="16dp">
+        android:spacing="8dp">
 
         <Button
             android:id="@+id/btnCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancelar"/>
+            android:text="Cancelar"
+            android:layout_marginEnd="8dp" />
 
         <Button
             android:id="@+id/btnAdd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Añadir"
-            android:layout_marginStart="12dp"/>
+            android:text="Añadir" />
+
     </LinearLayout>
 
 </LinearLayout>

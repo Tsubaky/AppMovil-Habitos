@@ -66,6 +66,7 @@ dependencies {
 
     // CardView para las tarjetas
     implementation("androidx.cardview:cardview:1.0.0")
+    implementation(libs.androidx.room.common.jvm)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

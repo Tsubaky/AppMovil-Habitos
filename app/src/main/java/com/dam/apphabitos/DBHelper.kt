@@ -16,6 +16,9 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
         const val COL_EMOJIS = "emojis"
         const val COL_COMPLETED = "completed"
         const val COL_CREATED = "created_at"
+        const val COL_DATE ="date"
+
+        const val COL_TIME = "time"
 
         //CONSTANTES PARA USUARIO
 
@@ -32,7 +35,9 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
                 $COL_NAME TEXT NOT NULL,
                 $COL_EMOJIS TEXT,
                 $COL_COMPLETED INTEGER DEFAULT 0,
-                $COL_CREATED INTEGER
+                $COL_CREATED INTEGER,
+                $COL_DATE TEXT NOT NULL,
+                $COL_TIME TEXT
             );
         """.trimIndent()
         db.execSQL(sqlHabits)
@@ -49,6 +54,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS $TABLE_HABITS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
         onCreate(db)
     }
 
@@ -59,6 +65,8 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
             put(COL_EMOJIS, habit.emojis)
             put(COL_COMPLETED, habit.completed)
             put(COL_CREATED, habit.createdAt)
+            put(COL_DATE, habit.date)
+            put(COL_TIME, habit.time)
         }
         return db.insert(TABLE_HABITS, null, cv)
     }
