@@ -1,68 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/dark_background">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_background">
 
-    <!-- 🗓️ Calendario -->
-    <CalendarView
-            android:id="@+id/calendarView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginTop="8dp" />
 
-    <!-- 📋 Título -->
+    <!-- ⭐ Calendario horizontal estilo Habit Tracker -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerCalendar"
+        android:layout_width="0dp"
+        android:layout_height="90dp"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:scrollbars="none"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:orientation="horizontal" />
+
+    <!-- Título -->
     <TextView
-            android:id="@+id/habitsTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Habits for today"
-            android:textSize="18sp"
-            android:textColor="@android:color/white"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/calendarView"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+        android:id="@+id/habitsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tus hábitos de hoy"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/recyclerCalendar"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
-    <!-- ✅ Checkbox 1 -->
-    <CheckBox
-            android:id="@+id/checkboxMeditate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Meditate (Morning)"
-            android:textColor="@android:color/white"
-            app:layout_constraintTop_toBottomOf="@id/habitsTitle"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="8dp" />
+    <!-- ⭐ Lista bonita de hábitos debajo del calendario -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvHabits"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:scrollbars="none"
+        app:layout_constraintTop_toBottomOf="@id/habitsTitle"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-    <!-- ✅ Checkbox 2 -->
-    <CheckBox
-            android:id="@+id/checkboxRead"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Read (Evening)"
-            android:textColor="@android:color/white"
-            app:layout_constraintTop_toBottomOf="@id/checkboxMeditate"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="4dp" />
 
-    <!-- 🔻 Bottom Navigation (anclado al fondo) -->
+    <!-- 🔻 Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigation"
-            android:layout_width="0dp"
-            android:layout_height="64dp"
-            app:menu="@menu/bottom_nav_menu"
-            android:background="@color/nav_background"
-            app:itemIconTint="@color/nav_item_tint"
-            app:itemTextColor="@color/nav_item_tint"
-            app:labelVisibilityMode="labeled"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+        android:id="@+id/bottomNavigation"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        app:menu="@menu/bottom_nav_menu"
+        android:background="@color/nav_background"
+        app:itemIconTint="@color/nav_item_tint"
+        app:itemTextColor="@color/nav_item_tint"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

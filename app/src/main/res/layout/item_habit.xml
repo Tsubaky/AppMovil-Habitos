@@ -23,16 +23,22 @@
 
         <TextView
             android:id="@+id/tvHabitName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Nombre hábito"
             android:textSize="16sp"
-            android:paddingStart="8dp"/>
+            android:paddingStart="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+        />
+
 
         <CheckBox
             android:id="@+id/cbDone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+
+
 </androidx.cardview.widget.CardView>

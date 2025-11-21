@@ -8,10 +8,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dam.apphabitos.model.Habit
 
-class HabitsAdapter(
+class HabitAdapter(
     private val items: MutableList<Habit>,
     private val onCheckedChanged: (habit: Habit, isChecked: Boolean) -> Unit
-) : RecyclerView.Adapter<HabitsAdapter.VH>() {
+) : RecyclerView.Adapter<HabitAdapter.VH>() {
 
     inner class VH(view: View) : RecyclerView.ViewHolder(view) {
         val tvEmojis: TextView = view.findViewById(R.id.tvEmojis)
