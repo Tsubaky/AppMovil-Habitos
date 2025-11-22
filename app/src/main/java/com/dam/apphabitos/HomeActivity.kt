@@ -21,7 +21,6 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var adapter: HabitAdapter
     private lateinit var rvHabits: RecyclerView
     private lateinit var tvCounter: TextView
-    private var completedCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,9 +36,16 @@ class HomeActivity : AppCompatActivity() {
         rvHabits = findViewById(R.id.rvHabits)
 
         adapter = HabitAdapter(mutableListOf()) { habit, isChecked ->
+            // ⭐ Actualizar en la base de datos
             db.updateHabitCompleted(habit.id, if (isChecked) 1 else 0)
             habit.completed = if (isChecked) 1 else 0
-            if (isChecked) completedCount++ else completedCount--
+
+            if (isChecked) {
+                // ⭐ Completado: remover de Home
+                adapter.remove(habit)
+            }
+
+            // ⭐ Actualizar contador
             updateCounterUI()
         }
 
@@ -50,6 +56,14 @@ class HomeActivity : AppCompatActivity() {
 
         val fab = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fabAddHabit)
         fab.setOnClickListener { showAddHabitDialog() }
+
+        // ⭐ Hacer el contador clickeable
+        tvCounter.setOnClickListener {
+            val intent = Intent(this, CompletedHabitsActivity::class.java).apply {
+                putExtra("username", username)
+            }
+            startActivity(intent)
+        }
 
         bottomNav = findViewById(R.id.bottomNavigation)
 
@@ -83,22 +97,25 @@ class HomeActivity : AppCompatActivity() {
                 else -> false
             }
         }
-        tvCounter.setOnClickListener {
-            val intent = Intent(this, CompletedHabitsActivity::class.java).apply {
-                putExtra("username", username)
-            }
-            startActivity(intent)
-        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadHabitsFromDb()
     }
 
     private fun updateCounterUI() {
+        // ⭐ Contar TODOS los completados de la BD (no solo los visibles)
+        val allHabits = db.getAllHabits()
+        val completedCount = allHabits.count { it.completed == 1 }
         tvCounter.text = completedCount.toString()
     }
 
     private fun loadHabitsFromDb() {
-        val list = db.getAllHabits()
-        adapter.updateList(list)
-        completedCount = list.count { it.completed == 1 }
+        val allHabits = db.getAllHabits()
+        // ⭐ Filtrar solo los NO completados para mostrar en Home
+        val pendingHabits = allHabits.filter { it.completed == 0 }
+        adapter.updateList(pendingHabits)
         updateCounterUI()
     }
 
@@ -111,8 +128,6 @@ class HomeActivity : AppCompatActivity() {
         val btnCancel = view.findViewById<Button>(R.id.btnCancel)
         val tvDateTimeDisplay = view.findViewById<TextView>(R.id.tvDateTimeDisplay)
         val btnSelectDateTime = view.findViewById<Button>(R.id.btnSelectDateTime)
-
-        // ⭐ NUEVO: Spinner de minutos Pomodoro
         val spinnerPomodoro = view.findViewById<Spinner>(R.id.spinnerPomodoroMinutes)
 
         val emojis = listOf("🔥","🌙","💪","🧘","📚","☕","🏃","🍎","🛌","🧹","🎧","✍️")
@@ -120,15 +135,12 @@ class HomeActivity : AppCompatActivity() {
         var selectedIndex = -1
         var selectedTimestamp = System.currentTimeMillis()
 
-        // ⭐ CONFIGURAR SPINNER CON OPCIONES
         val pomodoroOptions = listOf("Sin temporizador", "5 min", "10 min", "15 min", "20 min", "25 min", "30 min", "45 min", "60 min")
-        val pomodoroValues = listOf(0, 5, 10, 15, 20, 25, 30, 45, 60) // Los valores reales en minutos
+        val pomodoroValues = listOf(0, 5, 10, 15, 20, 25, 30, 45, 60)
 
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, pomodoroOptions)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerPomodoro.adapter = spinnerAdapter
-
-        // Por defecto selecciona "Sin temporizador"
         spinnerPomodoro.setSelection(0)
 
         val emojiAdapter = object : BaseAdapter() {
@@ -182,8 +194,6 @@ class HomeActivity : AppCompatActivity() {
             }
 
             val chosen = if (selectedIndex != -1) emojis[selectedIndex] else ""
-
-            // ⭐ OBTENER LOS MINUTOS SELECCIONADOS DEL SPINNER
             val selectedPomodoroPosition = spinnerPomodoro.selectedItemPosition
             val pomodoroMinutes = pomodoroValues[selectedPomodoroPosition]
 
@@ -192,7 +202,7 @@ class HomeActivity : AppCompatActivity() {
                 emojis = chosen,
                 completed = 0,
                 createdAt = selectedTimestamp,
-                pomodoroMinutes = pomodoroMinutes  // ⭐ GUARDAR LOS MINUTOS
+                pomodoroMinutes = pomodoroMinutes
             )
 
             val id = db.insertHabit(habit)
@@ -200,8 +210,6 @@ class HomeActivity : AppCompatActivity() {
 
             adapter.add(habit)
             dialog.dismiss()
-
-            updateCounterUI()
 
             Toast.makeText(this, "Hábito añadido", Toast.LENGTH_SHORT).show()
         }
@@ -216,7 +224,6 @@ class HomeActivity : AppCompatActivity() {
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
         DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
-            // Una vez seleccionada la fecha, mostramos el selector de hora
             showTimePickerDialog(selectedYear, selectedMonth, selectedDay, onDateTimeSelected)
         }, year, month, day).show()
     }

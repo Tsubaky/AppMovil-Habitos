@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.CompoundButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dam.apphabitos.model.Habit
@@ -35,13 +36,12 @@ class HabitAdapter(
         holder.cbDone.setOnCheckedChangeListener(null)
         holder.cbDone.isChecked = (h.completed == 1)
 
-        // ⭐ NUEVO: Cuando el usuario marca el checkbox
         holder.cbDone.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                // Mostrar modal con opciones
-                showCompletionDialog(holder.itemView, h)
+                // Usuario marcó el checkbox
+                showCompletionDialog(holder, h)
             } else {
-                // Si desmarca, simplemente actualiza
+                // Usuario desmarcó el checkbox (desde Completados)
                 h.completed = 0
                 onCheckedChanged(h, false)
             }
@@ -50,39 +50,47 @@ class HabitAdapter(
 
     override fun getItemCount(): Int = items.size
 
-    // ⭐ NUEVO: Modal al completar hábito
-    private fun showCompletionDialog(view: View, habit: Habit) {
-        val context = view.context
+    private fun showCompletionDialog(holder: VH, habit: Habit) {
+        val context = holder.itemView.context
+        val checkBox = holder.cbDone
 
         val builder = AlertDialog.Builder(context)
         builder.setTitle("¿Cómo completaste este hábito?")
 
-        // Si el hábito tiene temporizador configurado
         if (habit.pomodoroMinutes > 0) {
             builder.setMessage("Este hábito tiene un temporizador de ${habit.pomodoroMinutes} minutos")
 
             builder.setPositiveButton("Ir a Pomodoro") { dialog, _ ->
-                // Navegar a PomodoroActivity con los minutos
+                // ⭐ IMPORTANTE: Desmarcar el checkbox porque NO está terminado aún
+                checkBox.setOnCheckedChangeListener(null)
+                checkBox.isChecked = false
+
+                // Restaurar el listener
+                checkBox.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        showCompletionDialog(holder, habit)
+                    } else {
+                        habit.completed = 0
+                        onCheckedChanged(habit, false)
+                    }
+                }
+
+                // Ir a Pomodoro
                 val intent = Intent(context, PomodoroActivity::class.java).apply {
                     putExtra("pomodoroMinutes", habit.pomodoroMinutes)
                     putExtra("habitName", habit.name)
                 }
                 context.startActivity(intent)
                 dialog.dismiss()
-
-                // Desmarcar el checkbox (no completar aún)
-                val holder = view.tag as? VH
-                holder?.cbDone?.isChecked = false
             }
 
             builder.setNegativeButton("Marcar Terminado") { dialog, _ ->
-                // Completar directamente
+                // ⭐ Marcar como completado
                 habit.completed = 1
                 onCheckedChanged(habit, true)
                 dialog.dismiss()
             }
         } else {
-            // Si no tiene temporizador, solo preguntar si lo completó
             builder.setMessage("¿Deseas marcar este hábito como completado?")
 
             builder.setPositiveButton("Sí, Terminado") { dialog, _ ->
@@ -92,9 +100,19 @@ class HabitAdapter(
             }
 
             builder.setNegativeButton("Cancelar") { dialog, _ ->
-                // Desmarcar el checkbox
-                val holder = view.tag as? VH
-                holder?.cbDone?.isChecked = false
+                // ⭐ Desmarcar porque el usuario canceló
+                checkBox.setOnCheckedChangeListener(null)
+                checkBox.isChecked = false
+
+                // Restaurar el listener
+                checkBox.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        showCompletionDialog(holder, habit)
+                    } else {
+                        habit.completed = 0
+                        onCheckedChanged(habit, false)
+                    }
+                }
                 dialog.dismiss()
             }
         }
@@ -112,5 +130,13 @@ class HabitAdapter(
     fun add(habit: Habit) {
         items.add(0, habit)
         notifyItemInserted(0)
+    }
+
+    fun remove(habit: Habit) {
+        val index = items.indexOf(habit)
+        if (index != -1) {
+            items.removeAt(index)
+            notifyItemRemoved(index)
+        }
     }
 }
