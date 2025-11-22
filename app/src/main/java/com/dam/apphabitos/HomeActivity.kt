@@ -15,7 +15,7 @@ import com.dam.apphabitos.model.Habit
 import java.util.Calendar
 import java.util.Locale
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : BaseSwipeActivity() {
     private lateinit var bottomNav: BottomNavigationView
     private lateinit var db: DBHelper
     private lateinit var adapter: HabitAdapter
@@ -27,7 +27,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_home)
         supportActionBar?.hide()
 
-        val username = intent.getStringExtra("username") ?: "Usuario"
+        val username = getUsername()
         val tvName = findViewById<TextView>(R.id.tvName)
         tvName.text = username
 
@@ -67,6 +67,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         bottomNav = findViewById(R.id.bottomNavigation)
+        bottomNav.selectedItemId = R.id.nav_home
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {

@@ -17,7 +17,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.PercentFormatter
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class StatisticsActivity : AppCompatActivity() {
+class StatisticsActivity : BaseSwipeActivity() {
     private lateinit var bottomNav: BottomNavigationView
     private lateinit var barChart: BarChart
     private lateinit var pieChart: PieChart
@@ -26,9 +26,9 @@ class StatisticsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_statistics)
 
-        val username = intent.getStringExtra("username") ?: "Usuario"
-
+        val username = getUsername()
         bottomNav = findViewById(R.id.bottomNavigation)
+        bottomNav.selectedItemId = R.id.nav_stats  // ⭐ AGREGAR ESTA LÍNEA
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {

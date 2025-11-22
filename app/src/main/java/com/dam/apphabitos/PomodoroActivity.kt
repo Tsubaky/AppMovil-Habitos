@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class PomodoroActivity : AppCompatActivity() {
+class PomodoroActivity : BaseSwipeActivity() {
 
     // Vistas
     private lateinit var tvTimer: TextView
@@ -42,8 +42,7 @@ class PomodoroActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pomodoro)
 
-        val username = intent.getStringExtra("username") ?: "Usuario"
-
+        val username = getUsername()
         // ⭐ NUEVO: Recibir minutos del hábito
         val pomodoroMinutes = intent.getIntExtra("pomodoroMinutes", 0)
         val habitName = intent.getStringExtra("habitName") ?: ""
@@ -57,6 +56,7 @@ class PomodoroActivity : AppCompatActivity() {
         }
 
         bottomNav = findViewById(R.id.bottomNavigation)
+        bottomNav.selectedItemId = R.id.nav_timer  // ⭐ AGREGAR ESTA LÍNEA
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {

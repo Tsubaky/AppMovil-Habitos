@@ -20,7 +20,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class CalendarActivity : AppCompatActivity() {
+class CalendarActivity : BaseSwipeActivity() {
 
     private lateinit var recyclerCalendar: RecyclerView
     private lateinit var rvHabits: RecyclerView
@@ -32,6 +32,7 @@ class CalendarActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calendar)
 
+        val username = getUsername()
         db = DBHelper(this)
 
         tvHabitsTitle = findViewById(R.id.habitsTitle)
@@ -75,7 +76,8 @@ class CalendarActivity : AppCompatActivity() {
 
         // ----------------- NAVEGACIÓN -----------------
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
-        val username = intent.getStringExtra("username") ?: "Usuario"
+        bottomNav.selectedItemId = R.id.nav_calendar  // ⭐ AGREGAR ESTA LÍNEA
+
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
