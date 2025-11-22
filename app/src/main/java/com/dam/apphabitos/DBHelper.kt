@@ -9,7 +9,7 @@ import com.dam.apphabitos.model.Habit
 class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
     companion object {
         const val DB_NAME = "habits.db"
-        const val DB_VERSION = 2
+        const val DB_VERSION = 3
         const val TABLE_HABITS = "habits"
         const val COL_ID = "id"
         const val COL_NAME = "name"

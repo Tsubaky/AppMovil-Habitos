@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dam.apphabitos.model.DayModel
 import com.dam.apphabitos.model.Habit
-
+import android.content.Intent
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.LocalDate
-
 
 class CalendarActivity : AppCompatActivity() {
 
@@ -67,6 +67,39 @@ class CalendarActivity : AppCompatActivity() {
         }
 
         rvHabits.adapter = habitAdapter
+        // ⭐ SOLO AGREGA ESTO AL FINAL DEL onCreate:
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        val username = intent.getStringExtra("username") ?: "Usuario"
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    val i = Intent(this, HomeActivity::class.java).apply {
+                        putExtra("username", username)
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    }
+                    startActivity(i)
+                    true
+                }
+                R.id.nav_calendar -> true
+                R.id.nav_timer -> {
+                    val i = Intent(this, PomodoroActivity::class.java).apply {
+                        putExtra("username", username)
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    }
+                    startActivity(i)
+                    true
+                }
+                R.id.nav_stats -> {
+                    val i = Intent(this, StatisticsActivity::class.java).apply {
+                        putExtra("username", username)
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    }
+                    startActivity(i)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun showAddHabitDialog() {
