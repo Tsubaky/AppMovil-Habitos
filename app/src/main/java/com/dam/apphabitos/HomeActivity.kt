@@ -105,17 +105,18 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun updateCounterUI() {
-        // ⭐ Contar TODOS los completados de la BD (no solo los visibles)
+        // ⭐ Contar TODOS los completados directamente de la BD
         val allHabits = db.getAllHabits()
         val completedCount = allHabits.count { it.completed == 1 }
         tvCounter.text = completedCount.toString()
     }
 
     private fun loadHabitsFromDb() {
-        val allHabits = db.getAllHabits()
-        // ⭐ Filtrar solo los NO completados para mostrar en Home
-        val pendingHabits = allHabits.filter { it.completed == 0 }
-        adapter.updateList(pendingHabits)
+        // ⭐ Solo cargar hábitos de HOY o sin fecha programada
+        val todayHabits = db.getTodayHabits()
+        adapter.updateList(todayHabits)
+
+        // ⭐ Actualizar contador
         updateCounterUI()
     }
 
@@ -197,12 +198,21 @@ class HomeActivity : AppCompatActivity() {
             val selectedPomodoroPosition = spinnerPomodoro.selectedItemPosition
             val pomodoroMinutes = pomodoroValues[selectedPomodoroPosition]
 
+            // ⭐ FORMATEAR FECHA Y HORA CORRECTAMENTE
+            val calendar = Calendar.getInstance().apply {
+                timeInMillis = selectedTimestamp
+            }
+            val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val timeFormat = java.text.SimpleDateFormat("HH:mm", Locale.getDefault())
+
             val habit = Habit(
                 name = name,
                 emojis = chosen,
                 completed = 0,
                 createdAt = selectedTimestamp,
-                pomodoroMinutes = pomodoroMinutes
+                pomodoroMinutes = pomodoroMinutes,
+                date = dateFormat.format(calendar.time),  // ⭐ AGREGAR FECHA
+                time = timeFormat.format(calendar.time)   // ⭐ AGREGAR HORA
             )
 
             val id = db.insertHabit(habit)

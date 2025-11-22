@@ -136,4 +136,90 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
         }
         return isAuthenticated
     }
+
+    // ⭐ NUEVO: Obtener hábitos por fecha específica
+    fun getHabitsByDate(date: String): MutableList<Habit> {
+        val list = mutableListOf<Habit>()
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_HABITS WHERE $COL_DATE = ? ORDER BY $COL_TIME ASC",
+            arrayOf(date)
+        )
+        cursor.use {
+            while (cursor.moveToNext()) {
+                val h = Habit(
+                    id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_ID)),
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME)),
+                    emojis = cursor.getString(cursor.getColumnIndexOrThrow(COL_EMOJIS)) ?: "",
+                    completed = cursor.getInt(cursor.getColumnIndexOrThrow(COL_COMPLETED)),
+                    createdAt = cursor.getLong(cursor.getColumnIndexOrThrow(COL_CREATED)),
+                    date = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE)) ?: "",
+                    time = cursor.getString(cursor.getColumnIndexOrThrow(COL_TIME)) ?: "",
+                    pomodoroMinutes = cursor.getInt(cursor.getColumnIndexOrThrow(COL_POMODORO_MINUTES))
+                )
+                list.add(h)
+            }
+        }
+        return list
+    }
+
+    // ⭐ NUEVO: Obtener todos los hábitos que tienen fecha programada
+    fun getHabitsWithScheduledDate(): MutableList<Habit> {
+        val list = mutableListOf<Habit>()
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_HABITS WHERE $COL_DATE != '' ORDER BY $COL_DATE ASC, $COL_TIME ASC",
+            null
+        )
+        cursor.use {
+            while (cursor.moveToNext()) {
+                val h = Habit(
+                    id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_ID)),
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME)),
+                    emojis = cursor.getString(cursor.getColumnIndexOrThrow(COL_EMOJIS)) ?: "",
+                    completed = cursor.getInt(cursor.getColumnIndexOrThrow(COL_COMPLETED)),
+                    createdAt = cursor.getLong(cursor.getColumnIndexOrThrow(COL_CREATED)),
+                    date = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE)) ?: "",
+                    time = cursor.getString(cursor.getColumnIndexOrThrow(COL_TIME)) ?: "",
+                    pomodoroMinutes = cursor.getInt(cursor.getColumnIndexOrThrow(COL_POMODORO_MINUTES))
+                )
+                list.add(h)
+            }
+        }
+        return list
+    }
+    // ⭐ NUEVO: Obtener solo hábitos de hoy o sin fecha programada (para Home)
+    fun getTodayHabits(): MutableList<Habit> {
+        val list = mutableListOf<Habit>()
+        val db = readableDatabase
+
+        // Fecha de hoy en formato yyyy-MM-dd
+        val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+            .format(java.util.Date())
+
+        // Obtener hábitos que:
+        // 1. No tienen fecha programada (date = '')
+        // 2. O tienen fecha de hoy
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_HABITS WHERE ($COL_DATE = '' OR $COL_DATE = ?) AND $COL_COMPLETED = 0 ORDER BY $COL_CREATED DESC",
+            arrayOf(today)
+        )
+
+        cursor.use {
+            while (cursor.moveToNext()) {
+                val h = Habit(
+                    id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_ID)),
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME)),
+                    emojis = cursor.getString(cursor.getColumnIndexOrThrow(COL_EMOJIS)) ?: "",
+                    completed = cursor.getInt(cursor.getColumnIndexOrThrow(COL_COMPLETED)),
+                    createdAt = cursor.getLong(cursor.getColumnIndexOrThrow(COL_CREATED)),
+                    date = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE)) ?: "",
+                    time = cursor.getString(cursor.getColumnIndexOrThrow(COL_TIME)) ?: "",
+                    pomodoroMinutes = cursor.getInt(cursor.getColumnIndexOrThrow(COL_POMODORO_MINUTES))
+                )
+                list.add(h)
+            }
+        }
+        return list
+    }
 }

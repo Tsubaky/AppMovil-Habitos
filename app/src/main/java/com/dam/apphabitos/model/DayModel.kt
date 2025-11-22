@@ -6,7 +6,7 @@ import java.time.LocalDate
 data class DayModel(
     val dayNumber: Int,
     val dayName: String,
-    val date: LocalDate
-
+    val date: LocalDate,
+    var isSelected: Boolean = false
 
 )
