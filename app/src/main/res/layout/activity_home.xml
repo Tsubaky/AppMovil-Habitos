@@ -21,16 +21,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp">
 
-            <!-- Header -->
+            <!-- ⭐ Header mejorado con espaciado perfecto -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:paddingTop="8dp"
-                android:paddingBottom="16dp">
+                android:paddingBottom="24dp">
 
                 <ImageView
                     android:id="@+id/ivAvatar"
@@ -38,13 +41,14 @@
                     android:layout_height="56dp"
                     android:src="@drawable/ic_account_circle"
                     android:contentDescription="Avatar"
-                    android:layout_marginEnd="12dp"
+                    android:layout_marginEnd="16dp"
                     android:background="@drawable/profile_circle"
                     android:padding="6dp" />
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
@@ -53,7 +57,9 @@
                         android:layout_height="wrap_content"
                         android:text="BIENVENIDO"
                         android:textColor="@color/light_text"
-                        android:textSize="14sp"/>
+                        android:textSize="12sp"
+                        android:letterSpacing="0.1"
+                        android:layout_marginBottom="4dp"/>
 
                     <TextView
                         android:id="@+id/tvName"
@@ -62,18 +68,17 @@
                         android:text="Alex Turner"
                         android:textColor="@color/primary_text"
                         android:textStyle="bold"
-                        android:textSize="22sp"/>
+                        android:textSize="24sp"/>
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Title + controls row -->
+            <!-- ⭐ Título con contador circular alineado -->
             <LinearLayout
-                android:id="@+id/rowTitleControls"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingBottom="12dp">
+                android:paddingBottom="16dp">
 
                 <TextView
                     android:id="@+id/tvToday"
@@ -82,51 +87,56 @@
                     android:layout_weight="1"
                     android:text="Lista de Hoy"
                     android:textColor="@color/primary_text"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"/>
 
+                <!-- ⭐ Contador en círculo morado -->
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/counter_circle_background"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:id="@+id/counterContainer">
+
+                    <TextView
+                        android:id="@+id/tvCounter"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="0"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:gravity="center"/>
+                </FrameLayout>
             </LinearLayout>
-            <!-- RecyclerView para mostrar hábitos -->
+
+            <!-- ⭐ RecyclerView con espaciado mejorado -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvHabits"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false" />
-
-            <!-- Row with counter (left) and FAB (right) -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginBottom="8dp">
-
-                <!-- Contador a la izquierda -->
-                <TextView
-                    android:id="@+id/tvCounter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/primary_text"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentStart="true"/>
-
-                <!-- FAB morado a la derecha -->
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fabAddHabit"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_add"
-                    app:backgroundTint="@color/purple_500"
-                    app:fabSize="normal"
-                    android:contentDescription="Agregar hábito" />
-            </RelativeLayout>
-
+                android:nestedScrollingEnabled="false"
+                android:clipToPadding="false"
+                android:paddingBottom="80dp" />
 
         </LinearLayout>
     </ScrollView>
+
+    <!-- ⭐ FAB mejorado con mejor posicionamiento -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddHabit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="#364156"
+        app:tint="#FFFFFF"
+        app:fabSize="normal"
+        app:elevation="6dp"
+        android:contentDescription="Agregar hábito"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Bottom navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView

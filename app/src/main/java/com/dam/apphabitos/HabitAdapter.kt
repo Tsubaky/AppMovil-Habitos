@@ -55,10 +55,10 @@ class HabitAdapter(
         val checkBox = holder.cbDone
 
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("¿Cómo completaste este hábito?")
+        builder.setTitle("¿Que deseas hacer con el habito?")
 
         if (habit.pomodoroMinutes > 0) {
-            builder.setMessage("Este hábito tiene un temporizador de ${habit.pomodoroMinutes} minutos")
+            builder.setMessage("Temporizador de ${habit.pomodoroMinutes} minutos")
 
             builder.setPositiveButton("Ir a Pomodoro") { dialog, _ ->
                 // ⭐ IMPORTANTE: Desmarcar el checkbox porque NO está terminado aún

@@ -58,7 +58,8 @@ class HomeActivity : AppCompatActivity() {
         fab.setOnClickListener { showAddHabitDialog() }
 
         // ⭐ Hacer el contador clickeable
-        tvCounter.setOnClickListener {
+        val counterContainer = findViewById<FrameLayout>(R.id.counterContainer)
+        counterContainer.setOnClickListener {
             val intent = Intent(this, CompletedHabitsActivity::class.java).apply {
                 putExtra("username", username)
             }
