@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="12dp"
+    app:cardBackgroundColor="#1E1E1E">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp">
+
+        <!-- ⭐ Emoji con fondo circular -->
+        <FrameLayout
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/emoji_circle_background">
+
+            <TextView
+                android:id="@+id/tvEmojis"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="🔥"
+                android:textSize="24sp"
+                android:gravity="center"/>
+        </FrameLayout>
+
+        <!-- ⭐ Nombre del hábito con espacio perfecto -->
+        <TextView
+            android:id="@+id/tvHabitName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="Hacer ejercicio"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:maxLines="2"
+            android:ellipsize="end"/>
+
+        <!-- ⭐ Checkbox con mejor tamaño -->
+        <CheckBox
+            android:id="@+id/cbDone"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:buttonTint="#0B66C6"/>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

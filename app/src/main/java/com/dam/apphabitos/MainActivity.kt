@@ -1,47 +1,53 @@
 package com.dam.apphabitos
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.dam.apphabitos.ui.theme.AppHabitosTheme
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var db: DBHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            AppHabitosTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+        setContentView(R.layout.activity_main)
+
+        db = DBHelper(this)
+
+        val etUsername = findViewById<EditText>(R.id.etUsername)
+        val etPassword = findViewById<EditText>(R.id.etPassword)
+        val btnLogin = findViewById<Button>(R.id.btnLogin)
+        val btnGoRegister = findViewById<Button>(R.id.btnGoRegister)
+
+        btnLogin.setOnClickListener {
+            val username = etUsername.text.toString().trim()
+            val password = etPassword.text.toString().trim()
+
+            if (username.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Ingresa usuario y contraseña.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            //LA NUEVA LÓGICA DE AUTENTICACIÓN CON SQLite
+            val isAuthenticated = db.authenticateUser(username, password)
+
+            if (isAuthenticated) {
+                val intent = Intent(this, HomeActivity::class.java).apply {
+                    putExtra("username", username)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(this, "Usuario o contraseña incorrectos.", Toast.LENGTH_LONG).show()
             }
         }
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AppHabitosTheme {
-        Greeting("Android")
+        btnGoRegister.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
+        }
     }
 }

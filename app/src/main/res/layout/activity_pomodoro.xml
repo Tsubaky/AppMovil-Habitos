@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_background">
+
+    <!-- Botón atrás (icono con flecha para volver a la pantalla anterior) -->
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_arrow_back_24"
+        android:contentDescription="Volver"
+        android:padding="8dp"
+        android:layout_marginTop="15dp"
+        app:tint="#6B7280"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Título principal de la pantalla -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Temporizador"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.4" />
+
+    <!-- Contenedor del temporizador (círculos y tiempo) -->
+    <RelativeLayout
+        android:id="@+id/timerContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Círculo exterior decorativo -->
+        <View
+            android:id="@+id/outerCircle"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/profile_circle" />
+
+        <!-- Círculo interior con color sólido -->
+        <View
+            android:id="@+id/innerCircle"
+            android:layout_width="240dp"
+            android:layout_height="240dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/rounded_button" />
+
+        <!-- Texto centrado dentro del círculo -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <!-- Tiempo del temporizador -->
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:text="45:00"
+                android:textColor="#FFFFFF"
+                android:textSize="56sp"
+                android:textStyle="bold" />
+
+            <!-- Modo actual (Enfocado / Descanso) -->
+            <TextView
+                android:id="@+id/tvMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:alpha="0.8"
+                android:text="Enfocado"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- Sección de pestañas para elegir modo (Enfocado, Descanso corto, Descanso largo) -->
+    <LinearLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@drawable/icon_bg"
+        android:padding="4dp"
+        app:layout_constraintTop_toBottomOf="@id/timerContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Botón de modo enfocado (seleccionado por defecto) -->
+        <Button
+            android:id="@+id/btnFocus"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Enfocado"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:background="@drawable/rounded_button"
+            android:layout_margin="2dp"
+            android:textAllCaps="false"
+            app:backgroundTint="@color/blue_accent"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <!-- Botón de descanso corto -->
+
+        <!-- Botón de descanso largo -->
+        <Button
+            android:id="@+id/btnShortBreak"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="53dp"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:text="Descanso corto"
+            android:textAllCaps="false"
+            android:textColor="#8899AA"
+            android:textSize="14sp"
+            app:backgroundTint="@color/blue_accent"/>
+
+        <Button
+            android:id="@+id/btnLongBreak"
+            android:layout_width="0dp"
+            android:layout_height="58dp"
+            android:layout_weight="1"
+            android:text="Descanso largo"
+            android:textColor="#8899AA"
+            android:textSize="14sp"
+            android:background="@android:color/transparent"
+            android:layout_margin="2dp"
+            android:textAllCaps="false"
+            app:backgroundTint="@color/blue_accent"
+            style="?android:attr/borderlessButtonStyle" />
+    </LinearLayout>
+
+    <!-- Botón para iniciar el temporizador -->
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="180dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="32dp"
+        android:text="Comenzar"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/rounded_button"
+        android:textAllCaps="false"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:backgroundTint="@color/blue_accent"/>
+
+    <!-- Botón para reiniciar el temporizador -->
+    <Button
+        android:id="@+id/btnReset"
+        android:layout_width="180dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="12dp"
+        android:text="Reiniciar"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/rounded_button"
+        android:textAllCaps="false"
+        app:layout_constraintTop_toBottomOf="@id/btnStart"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:backgroundTint="@color/blue_accent"/>
+
+    <!-- Barra de navegación inferior -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:background="@color/nav_background"
+        app:itemIconTint="@color/nav_item_tint"
+        app:itemTextColor="@color/nav_item_tint"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_menu"
+        app:labelVisibilityMode="labeled" />
+</androidx.constraintlayout.widget.ConstraintLayout>
