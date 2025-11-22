@@ -124,19 +124,22 @@ class HomeActivity : AppCompatActivity() {
     private fun showAddHabitDialog() {
         val inflater = LayoutInflater.from(this)
         val view = inflater.inflate(R.layout.dialog_add_habit, null)
+
+        val emojiSelector = view.findViewById<androidx.cardview.widget.CardView>(R.id.emojiSelector)
+        val tvSelectedEmoji = view.findViewById<TextView>(R.id.tvSelectedEmoji)
         val etName = view.findViewById<EditText>(R.id.etHabitName)
-        val gvEmojis = view.findViewById<GridView>(R.id.gvEmojis)
-        val btnAdd = view.findViewById<Button>(R.id.btnAdd)
-        val btnCancel = view.findViewById<Button>(R.id.btnCancel)
+        val btnSelectDateTime = view.findViewById<androidx.cardview.widget.CardView>(R.id.btnSelectDateTime)
         val tvDateTimeDisplay = view.findViewById<TextView>(R.id.tvDateTimeDisplay)
-        val btnSelectDateTime = view.findViewById<Button>(R.id.btnSelectDateTime)
         val spinnerPomodoro = view.findViewById<Spinner>(R.id.spinnerPomodoroMinutes)
+        val btnAdd = view.findViewById<androidx.cardview.widget.CardView>(R.id.btnAdd)
+        val btnCancel = view.findViewById<androidx.cardview.widget.CardView>(R.id.btnCancel)
 
-        val emojis = listOf("🔥","🌙","💪","🧘","📚","☕","🏃","🍎","🛌","🧹","🎧","✍️")
+        val emojis = listOf("🔥","🌙","💪","🧘","📚","☕","🏃","🍎","🛌","🧹","🎧","✍️","💡","🎯","⭐","🌟","💎","🚀")
 
-        var selectedIndex = -1
+        var selectedEmoji = "😊"
         var selectedTimestamp = System.currentTimeMillis()
 
+        // ⭐ Configurar Spinner Pomodoro
         val pomodoroOptions = listOf("Sin temporizador", "5 min", "10 min", "15 min", "20 min", "25 min", "30 min", "45 min", "60 min")
         val pomodoroValues = listOf(0, 5, 10, 15, 20, 25, 30, 45, 60)
 
@@ -145,61 +148,49 @@ class HomeActivity : AppCompatActivity() {
         spinnerPomodoro.adapter = spinnerAdapter
         spinnerPomodoro.setSelection(0)
 
-        val emojiAdapter = object : BaseAdapter() {
-            override fun getCount() = emojis.size
-            override fun getItem(position: Int) = emojis[position]
-            override fun getItemId(position: Int) = position.toLong()
-            override fun getView(position: Int, convertView: android.view.View?, parent: android.view.ViewGroup?): android.view.View {
-                val tv = (convertView as? TextView) ?: TextView(this@HomeActivity).apply {
-                    val pad = (8 * resources.displayMetrics.density).toInt()
-                    setPadding(pad, pad, pad, pad)
-                    textSize = 20f
-                    gravity = android.view.Gravity.CENTER
-                }
-                tv.text = emojis[position]
-                if (position == selectedIndex) {
-                    tv.setBackgroundResource(android.R.drawable.dialog_holo_light_frame)
-                } else {
-                    tv.setBackgroundResource(0)
-                }
-                return tv
+        // ⭐ Mostrar fecha y hora inicial
+        updateDateTimeDisplay(tvDateTimeDisplay, selectedTimestamp)
+
+        // ⭐ Click en selector de emoji (tipo WhatsApp)
+        emojiSelector.setOnClickListener {
+            showEmojiPicker(emojis) { selectedEmojiFromPicker ->
+                selectedEmoji = selectedEmojiFromPicker
+                tvSelectedEmoji.text = selectedEmoji
             }
         }
 
-        gvEmojis.adapter = emojiAdapter
-
-        gvEmojis.setOnItemClickListener { _, _, position, _ ->
-            selectedIndex = if (selectedIndex == position) -1 else position
-            emojiAdapter.notifyDataSetChanged()
-        }
-
-        updateDateTimeDisplay(tvDateTimeDisplay, selectedTimestamp)
-
-        btnSelectDateTime?.setOnClickListener {
+        // ⭐ Click en selector de fecha/hora
+        btnSelectDateTime.setOnClickListener {
             showDatePickerDialog { timestamp ->
                 selectedTimestamp = timestamp
                 updateDateTimeDisplay(tvDateTimeDisplay, timestamp)
             }
         }
 
+        // ⭐ Crear el diálogo
         val dialog = AlertDialog.Builder(this)
             .setView(view)
+            .setCancelable(true)
             .create()
 
-        btnCancel.setOnClickListener { dialog.dismiss() }
+        dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
 
+        // ⭐ Click en Cancelar
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // ⭐ Click en Añadir
         btnAdd.setOnClickListener {
             val name = etName.text.toString().trim()
             if (name.isEmpty()) {
-                etName.error = "Ingresa un nombre"
+                Toast.makeText(this, "Ingresa un nombre para el hábito", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val chosen = if (selectedIndex != -1) emojis[selectedIndex] else ""
             val selectedPomodoroPosition = spinnerPomodoro.selectedItemPosition
             val pomodoroMinutes = pomodoroValues[selectedPomodoroPosition]
 
-            // ⭐ FORMATEAR FECHA Y HORA CORRECTAMENTE
             val calendar = Calendar.getInstance().apply {
                 timeInMillis = selectedTimestamp
             }
@@ -208,12 +199,12 @@ class HomeActivity : AppCompatActivity() {
 
             val habit = Habit(
                 name = name,
-                emojis = chosen,
+                emojis = selectedEmoji,
                 completed = 0,
                 createdAt = selectedTimestamp,
                 pomodoroMinutes = pomodoroMinutes,
-                date = dateFormat.format(calendar.time),  // ⭐ AGREGAR FECHA
-                time = timeFormat.format(calendar.time)   // ⭐ AGREGAR HORA
+                date = dateFormat.format(calendar.time),
+                time = timeFormat.format(calendar.time)
             )
 
             val id = db.insertHabit(habit)
@@ -222,7 +213,45 @@ class HomeActivity : AppCompatActivity() {
             adapter.add(habit)
             dialog.dismiss()
 
-            Toast.makeText(this, "Hábito añadido", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Hábito añadido ✅", Toast.LENGTH_SHORT).show()
+        }
+
+        dialog.show()
+    }
+
+    // ⭐ NUEVO: Mostrar selector de emojis tipo WhatsApp
+    private fun showEmojiPicker(emojis: List<String>, onEmojiSelected: (String) -> Unit) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_emoji_picker, null)
+        val gvEmojis = dialogView.findViewById<GridView>(R.id.gvEmojis)
+
+        val emojiAdapter = object : BaseAdapter() {
+            override fun getCount() = emojis.size
+            override fun getItem(position: Int) = emojis[position]
+            override fun getItemId(position: Int) = position.toLong()
+            override fun getView(position: Int, convertView: android.view.View?, parent: android.view.ViewGroup?): android.view.View {
+                val tv = (convertView as? TextView) ?: TextView(this@HomeActivity).apply {
+                    val size = (48 * resources.displayMetrics.density).toInt()
+                    layoutParams = android.view.ViewGroup.LayoutParams(size, size)
+                    textSize = 32f
+                    gravity = android.view.Gravity.CENTER
+                }
+                tv.text = emojis[position]
+                return tv
+            }
+        }
+
+        gvEmojis.adapter = emojiAdapter
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+
+        gvEmojis.setOnItemClickListener { _, _, position, _ ->
+            onEmojiSelected(emojis[position])
+            dialog.dismiss()
         }
 
         dialog.show()

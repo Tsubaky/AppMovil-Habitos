@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/dialog_background">
+
+    <!-- ⭐ Emoji e info del hábito -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingBottom="24dp">
+
+        <TextView
+            android:id="@+id/tvDialogEmoji"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🎯"
+            android:textSize="56sp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvDialogTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¿Qué deseas hacer?"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tvDialogMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Temporizador de 25 minutos"
+            android:textSize="14sp"
+            android:textColor="#B0B0B0"
+            android:gravity="center"/>
+    </LinearLayout>
+
+    <!-- ⭐ Botón Ir a Pomodoro -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/btnPomodoro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:cardBackgroundColor="#9C27B0"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⏱️"
+                android:textSize="24sp"
+                android:layout_marginEnd="12dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Ir a Pomodoro"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="→"
+                android:textSize="20sp"
+                android:textColor="#FFFFFF"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- ⭐ Botón Marcar Terminado -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/btnComplete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#2A2A2A"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="✅"
+                android:textSize="24sp"
+                android:layout_marginEnd="12dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Marcar Terminado"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="✓"
+                android:textSize="20sp"
+                android:textColor="#4CAF50"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

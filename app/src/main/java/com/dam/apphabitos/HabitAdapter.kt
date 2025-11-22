@@ -2,12 +2,14 @@ package com.dam.apphabitos
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import android.widget.CompoundButton
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.dam.apphabitos.model.Habit
 
@@ -32,16 +34,13 @@ class HabitAdapter(
         holder.tvHabitName.text = h.name
         holder.tvEmojis.text = h.emojis
 
-        // Evitar callback al reusar vistas
         holder.cbDone.setOnCheckedChangeListener(null)
         holder.cbDone.isChecked = (h.completed == 1)
 
         holder.cbDone.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                // Usuario marcó el checkbox
                 showCompletionDialog(holder, h)
             } else {
-                // Usuario desmarcó el checkbox (desde Completados)
                 h.completed = 0
                 onCheckedChanged(h, false)
             }
@@ -54,71 +53,79 @@ class HabitAdapter(
         val context = holder.itemView.context
         val checkBox = holder.cbDone
 
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("¿Que deseas hacer con el habito?")
+        // ⭐ Inflar el layout personalizado
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_habit_completion, null)
+
+        val tvDialogEmoji = dialogView.findViewById<TextView>(R.id.tvDialogEmoji)
+        val tvDialogTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
+        val tvDialogMessage = dialogView.findViewById<TextView>(R.id.tvDialogMessage)
+        val btnPomodoro = dialogView.findViewById<CardView>(R.id.btnPomodoro)
+        val btnComplete = dialogView.findViewById<CardView>(R.id.btnComplete)
+
+        // ⭐ Configurar contenido
+        tvDialogEmoji.text = habit.emojis
 
         if (habit.pomodoroMinutes > 0) {
-            builder.setMessage("Temporizador de ${habit.pomodoroMinutes} minutos")
-
-            builder.setPositiveButton("Ir a Pomodoro") { dialog, _ ->
-                // ⭐ IMPORTANTE: Desmarcar el checkbox porque NO está terminado aún
-                checkBox.setOnCheckedChangeListener(null)
-                checkBox.isChecked = false
-
-                // Restaurar el listener
-                checkBox.setOnCheckedChangeListener { _, isChecked ->
-                    if (isChecked) {
-                        showCompletionDialog(holder, habit)
-                    } else {
-                        habit.completed = 0
-                        onCheckedChanged(habit, false)
-                    }
-                }
-
-                // Ir a Pomodoro
-                val intent = Intent(context, PomodoroActivity::class.java).apply {
-                    putExtra("pomodoroMinutes", habit.pomodoroMinutes)
-                    putExtra("habitName", habit.name)
-                }
-                context.startActivity(intent)
-                dialog.dismiss()
-            }
-
-            builder.setNegativeButton("Marcar Terminado") { dialog, _ ->
-                // ⭐ Marcar como completado
-                habit.completed = 1
-                onCheckedChanged(habit, true)
-                dialog.dismiss()
-            }
+            tvDialogMessage.text = "Temporizador de ${habit.pomodoroMinutes} minutos"
+            btnPomodoro.visibility = View.VISIBLE
         } else {
-            builder.setMessage("¿Deseas marcar este hábito como completado?")
+            tvDialogMessage.text = "¿Marcar como completado?"
+            btnPomodoro.visibility = View.GONE
+        }
 
-            builder.setPositiveButton("Sí, Terminado") { dialog, _ ->
-                habit.completed = 1
-                onCheckedChanged(habit, true)
-                dialog.dismiss()
-            }
+        // ⭐ Crear el diálogo
+        val dialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .setCancelable(true)  // ⭐ PERMITE CERRAR AL TOCAR FUERA
+            .create()
 
-            builder.setNegativeButton("Cancelar") { dialog, _ ->
-                // ⭐ Desmarcar porque el usuario canceló
-                checkBox.setOnCheckedChangeListener(null)
-                checkBox.isChecked = false
+        // ⭐ Fondo transparente para ver el diseño personalizado
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-                // Restaurar el listener
-                checkBox.setOnCheckedChangeListener { _, isChecked ->
-                    if (isChecked) {
-                        showCompletionDialog(holder, habit)
-                    } else {
-                        habit.completed = 0
-                        onCheckedChanged(habit, false)
-                    }
+        // ⭐ Listener para cerrar al tocar fuera (desmarcar checkbox)
+        dialog.setOnCancelListener {
+            checkBox.setOnCheckedChangeListener(null)
+            checkBox.isChecked = false
+            checkBox.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    showCompletionDialog(holder, habit)
+                } else {
+                    habit.completed = 0
+                    onCheckedChanged(habit, false)
                 }
-                dialog.dismiss()
             }
         }
 
-        builder.setCancelable(false)
-        builder.show()
+        // ⭐ Click en Ir a Pomodoro
+        btnPomodoro.setOnClickListener {
+            checkBox.setOnCheckedChangeListener(null)
+            checkBox.isChecked = false
+
+            checkBox.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    showCompletionDialog(holder, habit)
+                } else {
+                    habit.completed = 0
+                    onCheckedChanged(habit, false)
+                }
+            }
+
+            val intent = Intent(context, PomodoroActivity::class.java).apply {
+                putExtra("pomodoroMinutes", habit.pomodoroMinutes)
+                putExtra("habitName", habit.name)
+            }
+            context.startActivity(intent)
+            dialog.dismiss()
+        }
+
+        // ⭐ Click en Marcar Terminado
+        btnComplete.setOnClickListener {
+            habit.completed = 1
+            onCheckedChanged(habit, true)
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     fun updateList(newList: List<Habit>) {
