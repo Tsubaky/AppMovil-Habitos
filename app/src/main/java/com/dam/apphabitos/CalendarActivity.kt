@@ -1,21 +1,13 @@
 package com.dam.apphabitos
 
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.GridView
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dam.apphabitos.model.DayModel
-import com.dam.apphabitos.model.Habit
-import android.content.Intent
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -24,9 +16,12 @@ class CalendarActivity : BaseSwipeActivity() {
 
     private lateinit var recyclerCalendar: RecyclerView
     private lateinit var rvHabits: RecyclerView
-    private lateinit var habitAdapter: HabitAdapter
+    private lateinit var habitAdapter: HabitTimelineAdapter
     private lateinit var db: DBHelper
     private lateinit var tvHabitsTitle: TextView
+    private lateinit var emptyState: LinearLayout
+    private lateinit var tvWeeklyProgress: TextView
+    private lateinit var tvStreak: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +31,14 @@ class CalendarActivity : BaseSwipeActivity() {
         db = DBHelper(this)
 
         tvHabitsTitle = findViewById(R.id.habitsTitle)
+        emptyState = findViewById(R.id.emptyState)
+        tvWeeklyProgress = findViewById(R.id.tvWeeklyProgress)
+        tvStreak = findViewById(R.id.tvStreak)
 
-        // ----------------- CALENDARIO -----------------
+        // Calcular estadísticas semanales
+        updateWeeklyStats()
+
+        // Calendario
         recyclerCalendar = findViewById(R.id.recyclerCalendar)
 
         val today = LocalDate.now()
@@ -47,7 +48,7 @@ class CalendarActivity : BaseSwipeActivity() {
                 dayNumber = date.dayOfMonth,
                 dayName = date.dayOfWeek.name.take(3),
                 date = date,
-                isSelected = (it == 0)  // El primer día (hoy) está seleccionado por defecto
+                isSelected = (it == 0)
             )
         }
 
@@ -55,55 +56,50 @@ class CalendarActivity : BaseSwipeActivity() {
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         val calendarAdapter = CalendarAdapter(days) { selectedDay ->
-            // ⭐ Al hacer clic en un día, filtrar hábitos por esa fecha
             loadHabitsForDate(selectedDay.date)
         }
 
         recyclerCalendar.adapter = calendarAdapter
 
-        // ----------------- HÁBITOS -----------------
+        // Hábitos
         rvHabits = findViewById(R.id.rvHabits)
         rvHabits.layoutManager = LinearLayoutManager(this)
 
-        habitAdapter = HabitAdapter(mutableListOf()) { habit, isChecked ->
+        habitAdapter = HabitTimelineAdapter(mutableListOf()) { habit, isChecked ->
             db.updateHabitCompleted(habit.id, if (isChecked) 1 else 0)
+            updateWeeklyStats()
         }
 
         rvHabits.adapter = habitAdapter
 
-        // ⭐ Cargar hábitos del día de hoy al iniciar
         loadHabitsForDate(today)
 
-        // ----------------- NAVEGACIÓN -----------------
+        // Navegación
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
-        bottomNav.selectedItemId = R.id.nav_calendar  // ⭐ AGREGAR ESTA LÍNEA
-
+        bottomNav.selectedItemId = R.id.nav_calendar
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    val i = Intent(this, HomeActivity::class.java).apply {
+                    startActivity(Intent(this, HomeActivity::class.java).apply {
                         putExtra("username", username)
                         addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                    }
-                    startActivity(i)
+                    })
                     true
                 }
                 R.id.nav_calendar -> true
                 R.id.nav_timer -> {
-                    val i = Intent(this, PomodoroActivity::class.java).apply {
+                    startActivity(Intent(this, PomodoroActivity::class.java).apply {
                         putExtra("username", username)
                         addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                    }
-                    startActivity(i)
+                    })
                     true
                 }
                 R.id.nav_stats -> {
-                    val i = Intent(this, StatisticsActivity::class.java).apply {
+                    startActivity(Intent(this, StatisticsActivity::class.java).apply {
                         putExtra("username", username)
                         addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                    }
-                    startActivity(i)
+                    })
                     true
                 }
                 else -> false
@@ -111,18 +107,25 @@ class CalendarActivity : BaseSwipeActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        // ⭐ Recargar hábitos del día actual al volver a la vista
-        loadHabitsForDate(LocalDate.now())
+    private fun updateWeeklyStats() {
+        val allHabits = db.getAllHabits()
+        val completedThisWeek = allHabits.count { it.completed == 1 }
+        val totalThisWeek = allHabits.size
+
+        tvWeeklyProgress.text = "$completedThisWeek/$totalThisWeek"
+        tvStreak.text = "🔥 5 días" // Puedes calcular la racha real aquí
     }
 
-    // ⭐ NUEVO: Cargar hábitos de una fecha específica
+    override fun onResume() {
+        super.onResume()
+        loadHabitsForDate(LocalDate.now())
+        updateWeeklyStats()
+    }
+
     private fun loadHabitsForDate(date: LocalDate) {
         val dateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         val habitsForDate = db.getHabitsByDate(dateString)
 
-        // Actualizar título
         val dayName = when (date.dayOfWeek.value) {
             1 -> "Lunes"
             2 -> "Martes"
@@ -135,15 +138,18 @@ class CalendarActivity : BaseSwipeActivity() {
         }
 
         tvHabitsTitle.text = if (date == LocalDate.now()) {
-            "Tus hábitos de hoy"
+            "Hábitos de hoy"
         } else {
             "Hábitos del $dayName ${date.dayOfMonth}"
         }
 
         if (habitsForDate.isEmpty()) {
-            Toast.makeText(this, "No hay hábitos para este día", Toast.LENGTH_SHORT).show()
+            emptyState.visibility = View.VISIBLE
+            rvHabits.visibility = View.GONE
+        } else {
+            emptyState.visibility = View.GONE
+            rvHabits.visibility = View.VISIBLE
+            habitAdapter.updateList(habitsForDate)
         }
-
-        habitAdapter.updateList(habitsForDate)
     }
 }

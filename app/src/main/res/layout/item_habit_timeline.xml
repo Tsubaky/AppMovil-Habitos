@@ -15,6 +15,25 @@
         android:gravity="center_vertical"
         android:padding="16dp">
 
+        <!-- ⭐ HORA a la izquierda -->
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="08:00"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#0B66C6"
+            android:layout_marginEnd="16dp"
+            android:minWidth="60dp"/>
+
+        <!-- ⭐ Línea vertical decorativa -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="16dp"
+            android:background="#0B66C6" />
+
         <!-- ⭐ Emoji con fondo circular -->
         <FrameLayout
             android:layout_width="44dp"
@@ -30,7 +49,7 @@
                 android:gravity="center"/>
         </FrameLayout>
 
-        <!-- ⭐ Nombre del hábito con espacio perfecto -->
+        <!-- ⭐ Nombre del hábito -->
         <TextView
             android:id="@+id/tvHabitName"
             android:layout_width="0dp"
@@ -44,7 +63,7 @@
             android:maxLines="2"
             android:ellipsize="end"/>
 
-        <!-- ⭐ Checkbox con mejor tamaño -->
+        <!-- ⭐ Checkbox -->
         <CheckBox
             android:id="@+id/cbDone"
             android:layout_width="32dp"
