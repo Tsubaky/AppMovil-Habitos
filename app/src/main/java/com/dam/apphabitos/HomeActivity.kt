@@ -83,6 +83,12 @@ class HomeActivity : AppCompatActivity() {
                 else -> false
             }
         }
+        tvCounter.setOnClickListener {
+            val intent = Intent(this, CompletedHabitsActivity::class.java).apply {
+                putExtra("username", username)
+            }
+            startActivity(intent)
+        }
     }
 
     private fun updateCounterUI() {
@@ -106,10 +112,24 @@ class HomeActivity : AppCompatActivity() {
         val tvDateTimeDisplay = view.findViewById<TextView>(R.id.tvDateTimeDisplay)
         val btnSelectDateTime = view.findViewById<Button>(R.id.btnSelectDateTime)
 
+        // ⭐ NUEVO: Spinner de minutos Pomodoro
+        val spinnerPomodoro = view.findViewById<Spinner>(R.id.spinnerPomodoroMinutes)
+
         val emojis = listOf("🔥","🌙","💪","🧘","📚","☕","🏃","🍎","🛌","🧹","🎧","✍️")
 
         var selectedIndex = -1
         var selectedTimestamp = System.currentTimeMillis()
+
+        // ⭐ CONFIGURAR SPINNER CON OPCIONES
+        val pomodoroOptions = listOf("Sin temporizador", "5 min", "10 min", "15 min", "20 min", "25 min", "30 min", "45 min", "60 min")
+        val pomodoroValues = listOf(0, 5, 10, 15, 20, 25, 30, 45, 60) // Los valores reales en minutos
+
+        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, pomodoroOptions)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerPomodoro.adapter = spinnerAdapter
+
+        // Por defecto selecciona "Sin temporizador"
+        spinnerPomodoro.setSelection(0)
 
         val emojiAdapter = object : BaseAdapter() {
             override fun getCount() = emojis.size
@@ -139,10 +159,8 @@ class HomeActivity : AppCompatActivity() {
             emojiAdapter.notifyDataSetChanged()
         }
 
-        // Mostrar fecha y hora iniciales
         updateDateTimeDisplay(tvDateTimeDisplay, selectedTimestamp)
 
-        // Selector de fecha y hora
         btnSelectDateTime?.setOnClickListener {
             showDatePickerDialog { timestamp ->
                 selectedTimestamp = timestamp
@@ -165,11 +183,16 @@ class HomeActivity : AppCompatActivity() {
 
             val chosen = if (selectedIndex != -1) emojis[selectedIndex] else ""
 
+            // ⭐ OBTENER LOS MINUTOS SELECCIONADOS DEL SPINNER
+            val selectedPomodoroPosition = spinnerPomodoro.selectedItemPosition
+            val pomodoroMinutes = pomodoroValues[selectedPomodoroPosition]
+
             val habit = Habit(
                 name = name,
                 emojis = chosen,
                 completed = 0,
-                createdAt = selectedTimestamp
+                createdAt = selectedTimestamp,
+                pomodoroMinutes = pomodoroMinutes  // ⭐ GUARDAR LOS MINUTOS
             )
 
             val id = db.insertHabit(habit)

@@ -44,6 +44,18 @@ class PomodoroActivity : AppCompatActivity() {
 
         val username = intent.getStringExtra("username") ?: "Usuario"
 
+        // ⭐ NUEVO: Recibir minutos del hábito
+        val pomodoroMinutes = intent.getIntExtra("pomodoroMinutes", 0)
+        val habitName = intent.getStringExtra("habitName") ?: ""
+
+        // Si vino desde un hábito con temporizador
+        if (pomodoroMinutes > 0) {
+            timeInMinutes = pomodoroMinutes
+            currentMode = TimerMode.FOCUS
+            // Opcional: mostrar el nombre del hábito
+            Toast.makeText(this, "Temporizador para: $habitName", Toast.LENGTH_LONG).show()
+        }
+
         bottomNav = findViewById(R.id.bottomNavigation)
 
         bottomNav.setOnItemSelectedListener { item ->

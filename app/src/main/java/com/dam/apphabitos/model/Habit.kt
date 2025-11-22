@@ -7,5 +7,6 @@ data class Habit(
     var completed: Int = 0,       // 0 = no completado, 1 = completado
     var createdAt: Long = System.currentTimeMillis(),
     var date: String = "",  // formato: yyyy-MM-dd
-    var time: String = ""      // formato: HH:mm
+    var time: String = "",      // formato: HH:mm
+    var pomodoroMinutes: Int = 0
 )

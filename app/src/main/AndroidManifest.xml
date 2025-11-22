@@ -9,9 +9,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         <activity
-            android:name=".StatisticsActivity"
+            android:name=".CompletedHabitsActivity"
             android:exported="false" />
-        <!-- Incluimos ambas Activities: Pomodoro y Calendar -->
+        <activity
+            android:name=".StatisticsActivity"
+            android:exported="false" /> <!-- Incluimos ambas Activities: Pomodoro y Calendar -->
         <activity
             android:name=".PomodoroActivity"
             android:exported="false" />

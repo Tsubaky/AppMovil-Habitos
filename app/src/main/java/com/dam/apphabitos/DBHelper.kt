@@ -9,18 +9,16 @@ import com.dam.apphabitos.model.Habit
 class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
     companion object {
         const val DB_NAME = "habits.db"
-        const val DB_VERSION = 3
+        const val DB_VERSION = 4  // ⭐ AUMENTA LA VERSIÓN
         const val TABLE_HABITS = "habits"
         const val COL_ID = "id"
         const val COL_NAME = "name"
         const val COL_EMOJIS = "emojis"
         const val COL_COMPLETED = "completed"
         const val COL_CREATED = "created_at"
-        const val COL_DATE ="date"
-
+        const val COL_DATE = "date"
         const val COL_TIME = "time"
-
-        //CONSTANTES PARA USUARIO
+        const val COL_POMODORO_MINUTES = "pomodoro_minutes"  // ⭐ NUEVA COLUMNA
 
         const val TABLE_USERS = "users"
         const val COL_USER_NAME = "username"
@@ -37,7 +35,8 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
                 $COL_COMPLETED INTEGER DEFAULT 0,
                 $COL_CREATED INTEGER,
                 $COL_DATE TEXT NOT NULL,
-                $COL_TIME TEXT
+                $COL_TIME TEXT,
+                $COL_POMODORO_MINUTES INTEGER DEFAULT 0
             );
         """.trimIndent()
         db.execSQL(sqlHabits)
@@ -67,6 +66,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
             put(COL_CREATED, habit.createdAt)
             put(COL_DATE, habit.date)
             put(COL_TIME, habit.time)
+            put(COL_POMODORO_MINUTES, habit.pomodoroMinutes)  // ⭐ NUEVO
         }
         return db.insert(TABLE_HABITS, null, cv)
     }
@@ -88,7 +88,29 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
                     name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME)),
                     emojis = cursor.getString(cursor.getColumnIndexOrThrow(COL_EMOJIS)) ?: "",
                     completed = cursor.getInt(cursor.getColumnIndexOrThrow(COL_COMPLETED)),
-                    createdAt = cursor.getLong(cursor.getColumnIndexOrThrow(COL_CREATED))
+                    createdAt = cursor.getLong(cursor.getColumnIndexOrThrow(COL_CREATED)),
+                    pomodoroMinutes = cursor.getInt(cursor.getColumnIndexOrThrow(COL_POMODORO_MINUTES))  // ⭐ NUEVO
+                )
+                list.add(h)
+            }
+        }
+        return list
+    }
+
+    // ⭐ NUEVO: Obtener solo hábitos completados
+    fun getCompletedHabits(): MutableList<Habit> {
+        val list = mutableListOf<Habit>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_HABITS WHERE $COL_COMPLETED = 1 ORDER BY $COL_CREATED DESC", null)
+        cursor.use {
+            while (cursor.moveToNext()) {
+                val h = Habit(
+                    id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_ID)),
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME)),
+                    emojis = cursor.getString(cursor.getColumnIndexOrThrow(COL_EMOJIS)) ?: "",
+                    completed = cursor.getInt(cursor.getColumnIndexOrThrow(COL_COMPLETED)),
+                    createdAt = cursor.getLong(cursor.getColumnIndexOrThrow(COL_CREATED)),
+                    pomodoroMinutes = cursor.getInt(cursor.getColumnIndexOrThrow(COL_POMODORO_MINUTES))
                 )
                 list.add(h)
             }
@@ -102,23 +124,16 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
             put(COL_USER_NAME, username)
             put(COL_PASSWORD, password)
         }
-        //INTENTA INSERTAR UN NUEVO USUARIO
         return db.insert(TABLE_USERS, null, cv)
     }
 
     fun authenticateUser(username: String, password: String): Boolean {
         val db = readableDatabase
         var isAuthenticated = false
-
-        //BUSCA UN REGISTRO DONDE EL NOMBRE DE USUARIO Y LA CONTRASEÑA COINCIDAN
         val cursor = db.rawQuery("SELECT * FROM $TABLE_USERS WHERE $COL_USER_NAME = ? AND $COL_PASSWORD = ?", arrayOf(username, password))
-
         cursor.use {
-            //SI moveToFirst() es true, significa que encontró un usuario
             isAuthenticated = cursor.moveToFirst()
         }
         return isAuthenticated
     }
-
-
 }
