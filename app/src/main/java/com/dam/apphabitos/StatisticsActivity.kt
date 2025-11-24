@@ -3,6 +3,7 @@ package com.dam.apphabitos
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.PieChart
@@ -40,6 +41,7 @@ class StatisticsActivity : BaseSwipeActivity() {
                     startActivity(i)
                     true
                 }
+
                 R.id.nav_timer -> {
                     val i = Intent(this, PomodoroActivity::class.java).apply {
                         putExtra("username", username)
@@ -48,6 +50,7 @@ class StatisticsActivity : BaseSwipeActivity() {
                     startActivity(i)
                     true
                 }
+
                 R.id.nav_calendar -> {
                     val i = Intent(this, CalendarActivity::class.java).apply {
                         putExtra("username", username)
@@ -56,6 +59,7 @@ class StatisticsActivity : BaseSwipeActivity() {
                     startActivity(i)
                     true
                 }
+
                 R.id.nav_stats -> true
                 else -> false
             }
@@ -67,22 +71,51 @@ class StatisticsActivity : BaseSwipeActivity() {
 
         setupBarChart()
         setupPieChart()
+        updateTotalCompleted()
+        updateCompletionRate()
+        updateStreaks()
+    }
+
+    private fun updateTotalCompleted() {
+        val tvTotalCompleted = findViewById<TextView>(R.id.tvTotalCompleted)
+        val db = DBHelper(this)
+        val totalCompleted = db.getTotalCompleted()
+        tvTotalCompleted.text = totalCompleted.toString()
+    }
+
+    private fun updateCompletionRate() {
+        val tvCompletionRate = findViewById<TextView>(R.id.tvCompletionRate)
+        val tvCompletionPeriod = findViewById<TextView>(R.id.tvCompletionPeriod)
+
+        val db = DBHelper(this)
+        val rate = db.getCompletionRateLast7Days()
+
+        tvCompletionRate.text = "$rate%"
+        tvCompletionPeriod.text = "Últimos 7 días"
+    }
+
+    private fun updateStreaks() {
+        val tvCurrentStreak = findViewById<TextView>(R.id.tvCurrentStreak)
+        val tvLongestStreak = findViewById<TextView>(R.id.tvLongestStreak)
+
+        val db = DBHelper(this)
+        val currentStreak = db.getCurrentStreak()
+        val longestStreak = db.getLongestStreak()
+
+        tvCurrentStreak.text = "$currentStreak días"
+        tvLongestStreak.text = "$longestStreak días"
     }
 
     private fun setupBarChart() {
-        //Datos de ejemplo - Última semana
+        val db = DBHelper(this)
+        val values = db.getCompletedLast7Days()  // ← DATOS REALES
+
         val entries = ArrayList<BarEntry>()
-        entries.add(BarEntry(0f, 3f)) //Lunes
-        entries.add(BarEntry(1f, 5f)) //Martes
-        entries.add(BarEntry(2f, 7f)) //Miércoles
-        entries.add(BarEntry(3f, 4f)) //Jueves
-        entries.add(BarEntry(4f, 5f)) //Viernes
-        entries.add(BarEntry(5f, 3f)) //Sábado
-        entries.add(BarEntry(6f, 6f)) //Domingo
+        values.forEachIndexed { index, value ->
+            entries.add(BarEntry(index.toFloat(), value.toFloat()))
+        }
 
         val barDataSet = BarDataSet(entries, "Hábitos completados")
-
-        //Colores del diseño de la app
         barDataSet.color = Color.parseColor("#3B82F6")
         barDataSet.valueTextColor = Color.WHITE
         barDataSet.valueTextSize = 12f
@@ -90,91 +123,99 @@ class StatisticsActivity : BaseSwipeActivity() {
         val barData = BarData(barDataSet)
         barData.barWidth = 0.6f
 
-        //Configuración del gráfico
         barChart.data = barData
         barChart.description.isEnabled = false
         barChart.legend.isEnabled = false
         barChart.setDrawValueAboveBar(true)
         barChart.setFitBars(true)
-        barChart.animateY(1000)
+        barChart.animateY(800)
 
-        //Fondo oscuro
         barChart.setBackgroundColor(Color.parseColor("#1E293B"))
-        barChart.setDrawGridBackground(false)
 
-        //Configurar eje X (días de la semana)
         val xAxis = barChart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
         xAxis.textColor = Color.parseColor("#94A3B8")
-        xAxis.textSize = 11f
         xAxis.granularity = 1f
-        xAxis.valueFormatter = IndexAxisValueFormatter(arrayOf("L", "M", "M", "J", "V", "S", "D"))
 
-        //Configurar eje Y izquierdo
-        val leftAxis = barChart.axisLeft
-        leftAxis.textColor = Color.parseColor("#94A3B8")
-        leftAxis.setDrawGridLines(true)
-        leftAxis.gridColor = Color.parseColor("#334155")
-        leftAxis.axisMinimum = 0f
+        xAxis.valueFormatter = IndexAxisValueFormatter(getDayLabels())
 
-        //Desactivar eje Y Derecho
+        barChart.axisLeft.apply {
+            textColor = Color.parseColor("#94A3B8")
+            setDrawGridLines(true)
+            gridColor = Color.parseColor("#334155")
+            axisMinimum = 0f
+        }
+
         barChart.axisRight.isEnabled = false
-
         barChart.invalidate()
+    }
+    private fun getDayLabels(): Array<String> {
+        val calendar = java.util.Calendar.getInstance()
+        val labels = Array(7) { "" }
+        val dayNames = arrayOf("D", "L", "M", "M", "J", "V", "S")
+
+        // Retrocede 6 días para empezar desde hace una semana
+        calendar.add(java.util.Calendar.DAY_OF_YEAR, -6)
+
+        for (i in 0..6) {
+            val dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK)
+            // Calendar.DAY_OF_WEEK: 1=Domingo, 2=Lunes, ..., 7=Sábado
+            labels[i] = dayNames[dayOfWeek - 1]
+            calendar.add(java.util.Calendar.DAY_OF_YEAR, 1)
+        }
+
+        return labels
     }
 
     private fun setupPieChart() {
-        //Datos de ejemplo
-        val completeHabits = 15f
-        val pendingHabits = 5f
-        val totalHabits = completeHabits + pendingHabits
+        val db = DBHelper(this)
+
+        val completed = db.getTotalCompleted().toFloat()
+        val pending = db.getTotalPending().toFloat()
+        val total = completed + pending
+        val percent = if (total == 0f) 0 else (completed / total * 100).toInt()
 
         val entries = ArrayList<PieEntry>()
-        entries.add(PieEntry(completeHabits, "Completados"))
-        entries.add(PieEntry(pendingHabits, "Pendientes"))
+        entries.add(PieEntry(completed, "Completados"))
+        entries.add(PieEntry(pending, "Pendientes"))
 
         val pieDataSet = PieDataSet(entries, "")
-
-        //Colores del diseño de la app
-        val colors = ArrayList<Int>()
-        colors.add(Color.parseColor("#3B82F6"))
-        colors.add(Color.parseColor("#475569"))
-        pieDataSet.colors = colors
-
+        pieDataSet.colors = arrayListOf(
+            Color.parseColor("#3B82F6"),
+            Color.parseColor("#475569")
+        )
         pieDataSet.valueTextColor = Color.WHITE
-        pieDataSet.valueTextSize = 16f
-        pieDataSet.sliceSpace = 3f
-        pieDataSet.selectionShift = 8f
+        pieDataSet.valueTextSize = 14f
 
         val pieData = PieData(pieDataSet)
         pieData.setValueFormatter(PercentFormatter(pieChart))
 
-        //Configuración del gráfico circular
         pieChart.data = pieData
         pieChart.description.isEnabled = false
-        pieChart.isRotationEnabled = true
         pieChart.setHoleColor(Color.parseColor("#1E293B"))
-        pieChart.setTransparentCircleColor(Color.WHITE)
-        pieChart.setTransparentCircleAlpha(50)
         pieChart.holeRadius = 50f
-        pieChart.transparentCircleRadius = 55f
         pieChart.setDrawCenterText(true)
-        pieChart.centerText = "85%\nCompletados"
+        pieChart.centerText = "$percent%\nCompletados"
         pieChart.setCenterTextColor(Color.WHITE)
         pieChart.setCenterTextSize(18f)
-        pieChart.animateY(1000)
 
-        //Fondo oscuro
-        pieChart.setBackgroundColor(Color.parseColor("#1E293B"))
+        pieChart.animateY(800)
 
-        //Leyenda
-        val legend = pieChart.legend
-        legend.textColor = Color.parseColor("#94A3B8")
-        legend.textSize = 12f
-        legend.isEnabled = true
+        pieChart.legend.textColor = Color.parseColor("#94A3B8")
+        pieChart.legend.textSize = 12f
 
         pieChart.setUsePercentValues(true)
         pieChart.invalidate()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        setupBarChart()
+        setupPieChart()
+        updateTotalCompleted()
+        updateCompletionRate()
+        updateStreaks()
     }
 }
