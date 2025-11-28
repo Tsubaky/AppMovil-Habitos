@@ -27,7 +27,7 @@ class CompletedHabitsActivity : AppCompatActivity() {
         rvCompletedHabits = findViewById(R.id.rvCompletedHabits)
         rvCompletedHabits.layoutManager = LinearLayoutManager(this)
 
-        // Adapter simple, sin funcionalidad de check (ya están completados)
+        // Adapter simple, sin funcionalidad de check
         adapter = HabitAdapter(mutableListOf()) { habit, isChecked ->
             // No hacemos nada, ya están completados
             db.updateHabitCompleted(habit.id, if (isChecked) 1 else 0)

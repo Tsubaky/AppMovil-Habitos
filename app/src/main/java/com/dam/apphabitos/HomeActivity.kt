@@ -36,16 +36,16 @@ class HomeActivity : BaseSwipeActivity() {
         rvHabits = findViewById(R.id.rvHabits)
 
         adapter = HabitAdapter(mutableListOf()) { habit, isChecked ->
-            // ⭐ Actualizar en la base de datos
+            // Actualizar en la base de datos
             db.updateHabitCompleted(habit.id, if (isChecked) 1 else 0)
             habit.completed = if (isChecked) 1 else 0
 
             if (isChecked) {
-                // ⭐ Completado: remover de Home
+                //Completado: remover de Home
                 adapter.remove(habit)
             }
 
-            // ⭐ Actualizar contador
+            //Actualizar contador
             updateCounterUI()
         }
 
@@ -57,7 +57,7 @@ class HomeActivity : BaseSwipeActivity() {
         val fab = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fabAddHabit)
         fab.setOnClickListener { showAddHabitDialog() }
 
-        // ⭐ Hacer el contador clickeable
+        //Hacer el contador clickeable
         val counterContainer = findViewById<FrameLayout>(R.id.counterContainer)
         counterContainer.setOnClickListener {
             val intent = Intent(this, CompletedHabitsActivity::class.java).apply {
@@ -107,18 +107,18 @@ class HomeActivity : BaseSwipeActivity() {
     }
 
     private fun updateCounterUI() {
-        // ⭐ Contar TODOS los completados directamente de la BD
+        //Contar todos los completados directamente de la BD
         val allHabits = db.getAllHabits()
         val completedCount = allHabits.count { it.completed == 1 }
         tvCounter.text = completedCount.toString()
     }
 
     private fun loadHabitsFromDb() {
-        // ⭐ Solo cargar hábitos de HOY o sin fecha programada
+        // Solo cargar hábitos de HOY o sin fecha programada
         val todayHabits = db.getTodayHabits()
         adapter.updateList(todayHabits)
 
-        // ⭐ Actualizar contador
+        //Actualizar contador
         updateCounterUI()
     }
 
@@ -140,7 +140,7 @@ class HomeActivity : BaseSwipeActivity() {
         var selectedEmoji = "😊"
         var selectedTimestamp = System.currentTimeMillis()
 
-        // ⭐ Configurar Spinner Pomodoro
+        // Configurar Spinner Pomodoro
         val pomodoroOptions = listOf("Sin temporizador", "5 min", "10 min", "15 min", "20 min", "25 min", "30 min", "45 min", "60 min")
         val pomodoroValues = listOf(0, 5, 10, 15, 20, 25, 30, 45, 60)
 
@@ -149,10 +149,10 @@ class HomeActivity : BaseSwipeActivity() {
         spinnerPomodoro.adapter = spinnerAdapter
         spinnerPomodoro.setSelection(0)
 
-        // ⭐ Mostrar fecha y hora inicial
+        //Mostrar fecha y hora inicial
         updateDateTimeDisplay(tvDateTimeDisplay, selectedTimestamp)
 
-        // ⭐ Click en selector de emoji (tipo WhatsApp)
+        //lick en selector de emoji (tipo WhatsApp)
         emojiSelector.setOnClickListener {
             showEmojiPicker(emojis) { selectedEmojiFromPicker ->
                 selectedEmoji = selectedEmojiFromPicker
@@ -160,7 +160,7 @@ class HomeActivity : BaseSwipeActivity() {
             }
         }
 
-        // ⭐ Click en selector de fecha/hora
+        // Click en selector de fecha/hora
         btnSelectDateTime.setOnClickListener {
             showDatePickerDialog { timestamp ->
                 selectedTimestamp = timestamp
@@ -168,7 +168,7 @@ class HomeActivity : BaseSwipeActivity() {
             }
         }
 
-        // ⭐ Crear el diálogo
+        //Crear el diálogo
         val dialog = AlertDialog.Builder(this)
             .setView(view)
             .setCancelable(true)
@@ -176,12 +176,12 @@ class HomeActivity : BaseSwipeActivity() {
 
         dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
 
-        // ⭐ Click en Cancelar
+        //Click en Cancelar
         btnCancel.setOnClickListener {
             dialog.dismiss()
         }
 
-        // ⭐ Click en Añadir
+        //Click en Añadir
         btnAdd.setOnClickListener {
             val name = etName.text.toString().trim()
             if (name.isEmpty()) {
@@ -220,7 +220,7 @@ class HomeActivity : BaseSwipeActivity() {
         dialog.show()
     }
 
-    // ⭐ NUEVO: Mostrar selector de emojis tipo WhatsApp
+    //NUEVO: Mostrar selector de emojis tipo WhatsApp
     private fun showEmojiPicker(emojis: List<String>, onEmojiSelected: (String) -> Unit) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_emoji_picker, null)
         val gvEmojis = dialogView.findViewById<GridView>(R.id.gvEmojis)

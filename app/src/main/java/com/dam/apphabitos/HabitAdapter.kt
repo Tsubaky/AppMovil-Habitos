@@ -53,7 +53,7 @@ class HabitAdapter(
         val context = holder.itemView.context
         val checkBox = holder.cbDone
 
-        // ⭐ Inflar el layout personalizado
+        //Inflar el layout personalizado
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_habit_completion, null)
 
         val tvDialogEmoji = dialogView.findViewById<TextView>(R.id.tvDialogEmoji)
@@ -62,7 +62,7 @@ class HabitAdapter(
         val btnPomodoro = dialogView.findViewById<CardView>(R.id.btnPomodoro)
         val btnComplete = dialogView.findViewById<CardView>(R.id.btnComplete)
 
-        // ⭐ Configurar contenido
+        //Configurar contenido
         tvDialogEmoji.text = habit.emojis
 
         if (habit.pomodoroMinutes > 0) {
@@ -73,16 +73,16 @@ class HabitAdapter(
             btnPomodoro.visibility = View.GONE
         }
 
-        // ⭐ Crear el diálogo
+        //Crear el diálogo
         val dialog = AlertDialog.Builder(context)
             .setView(dialogView)
-            .setCancelable(true)  // ⭐ PERMITE CERRAR AL TOCAR FUERA
+            .setCancelable(true)  //PERMITE CERRAR AL TOCAR FUERA
             .create()
 
-        // ⭐ Fondo transparente para ver el diseño personalizado
+        //Fondo transparente para ver el diseño personalizado
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        // ⭐ Listener para cerrar al tocar fuera (desmarcar checkbox)
+        // Listener para cerrar al tocar fuera (desmarcar checkbox)
         dialog.setOnCancelListener {
             checkBox.setOnCheckedChangeListener(null)
             checkBox.isChecked = false
@@ -96,7 +96,7 @@ class HabitAdapter(
             }
         }
 
-        // ⭐ Click en Ir a Pomodoro
+        //Click en Ir a Pomodoro
         btnPomodoro.setOnClickListener {
             checkBox.setOnCheckedChangeListener(null)
             checkBox.isChecked = false
@@ -118,7 +118,7 @@ class HabitAdapter(
             dialog.dismiss()
         }
 
-        // ⭐ Click en Marcar Terminado
+        //Click en Marcar Terminado
         btnComplete.setOnClickListener {
             habit.completed = 1
             onCheckedChanged(habit, true)

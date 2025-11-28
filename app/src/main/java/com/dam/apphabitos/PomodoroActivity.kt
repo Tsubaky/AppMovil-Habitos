@@ -43,7 +43,7 @@ class PomodoroActivity : BaseSwipeActivity() {
         setContentView(R.layout.activity_pomodoro)
 
         val username = getUsername()
-        // ⭐ NUEVO: Recibir minutos del hábito
+        //Recibir minutos del hábito
         val pomodoroMinutes = intent.getIntExtra("pomodoroMinutes", 0)
         val habitName = intent.getStringExtra("habitName") ?: ""
 
@@ -56,7 +56,7 @@ class PomodoroActivity : BaseSwipeActivity() {
         }
 
         bottomNav = findViewById(R.id.bottomNavigation)
-        bottomNav.selectedItemId = R.id.nav_timer  // ⭐ AGREGAR ESTA LÍNEA
+        bottomNav.selectedItemId = R.id.nav_timer
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {

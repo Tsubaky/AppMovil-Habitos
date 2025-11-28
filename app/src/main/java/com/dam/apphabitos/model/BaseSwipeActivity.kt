@@ -55,7 +55,6 @@ abstract class BaseSwipeActivity : AppCompatActivity() {
     }
 
     private fun onSwipeRight() {
-        // ⭐ Deslizar DERECHA = pantalla ANTERIOR
         // Orden: Home ← Calendar ← Stats ← Pomodoro
         when (this) {
             is CalendarActivity -> navigateTo(HomeActivity::class.java)
@@ -65,7 +64,6 @@ abstract class BaseSwipeActivity : AppCompatActivity() {
     }
 
     private fun onSwipeLeft() {
-        // ⭐ Deslizar IZQUIERDA = pantalla SIGUIENTE
         // Orden: Home → Calendar → Stats → Pomodoro
         when (this) {
             is HomeActivity -> navigateTo(CalendarActivity::class.java)

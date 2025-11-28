@@ -15,7 +15,7 @@
         android:gravity="center_vertical"
         android:padding="16dp">
 
-        <!-- ⭐ Emoji con fondo circular -->
+        <!-- Emoji con fondo circular -->
         <FrameLayout
             android:layout_width="44dp"
             android:layout_height="44dp"
@@ -30,7 +30,7 @@
                 android:gravity="center"/>
         </FrameLayout>
 
-        <!-- ⭐ Nombre del hábito con espacio perfecto -->
+        <!-- Nombre del hábito con espacio perfecto -->
         <TextView
             android:id="@+id/tvHabitName"
             android:layout_width="0dp"
@@ -44,7 +44,7 @@
             android:maxLines="2"
             android:ellipsize="end"/>
 
-        <!-- ⭐ Checkbox con mejor tamaño -->
+        <!-- Checkbox con mejor tamaño -->
         <CheckBox
             android:id="@+id/cbDone"
             android:layout_width="32dp"

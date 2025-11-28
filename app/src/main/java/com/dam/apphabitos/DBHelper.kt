@@ -9,7 +9,7 @@ import com.dam.apphabitos.model.Habit
 class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
     companion object {
         const val DB_NAME = "habits.db"
-        const val DB_VERSION = 4  // ⭐ AUMENTA LA VERSIÓN
+        const val DB_VERSION = 4
         const val TABLE_HABITS = "habits"
         const val COL_ID = "id"
         const val COL_NAME = "name"
@@ -18,7 +18,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
         const val COL_CREATED = "created_at"
         const val COL_DATE = "date"
         const val COL_TIME = "time"
-        const val COL_POMODORO_MINUTES = "pomodoro_minutes"  // ⭐ NUEVA COLUMNA
+        const val COL_POMODORO_MINUTES = "pomodoro_minutes"
 
         const val TABLE_USERS = "users"
         const val COL_USER_NAME = "username"
@@ -66,7 +66,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
             put(COL_CREATED, habit.createdAt)
             put(COL_DATE, habit.date)
             put(COL_TIME, habit.time)
-            put(COL_POMODORO_MINUTES, habit.pomodoroMinutes)  // ⭐ NUEVO
+            put(COL_POMODORO_MINUTES, habit.pomodoroMinutes)
         }
         return db.insert(TABLE_HABITS, null, cv)
     }
@@ -89,7 +89,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
                     emojis = cursor.getString(cursor.getColumnIndexOrThrow(COL_EMOJIS)) ?: "",
                     completed = cursor.getInt(cursor.getColumnIndexOrThrow(COL_COMPLETED)),
                     createdAt = cursor.getLong(cursor.getColumnIndexOrThrow(COL_CREATED)),
-                    pomodoroMinutes = cursor.getInt(cursor.getColumnIndexOrThrow(COL_POMODORO_MINUTES))  // ⭐ NUEVO
+                    pomodoroMinutes = cursor.getInt(cursor.getColumnIndexOrThrow(COL_POMODORO_MINUTES))
                 )
                 list.add(h)
             }
@@ -97,7 +97,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
         return list
     }
 
-    // ⭐ NUEVO: Obtener solo hábitos completados
+    //Obtener solo hábitos completados
     fun getCompletedHabits(): MutableList<Habit> {
         val list = mutableListOf<Habit>()
         val db = readableDatabase
@@ -137,7 +137,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
         return isAuthenticated
     }
 
-    // ⭐ NUEVO: Obtener hábitos por fecha específica
+    //Obtener hábitos por fecha específica
     fun getHabitsByDate(date: String): MutableList<Habit> {
         val list = mutableListOf<Habit>()
         val db = readableDatabase

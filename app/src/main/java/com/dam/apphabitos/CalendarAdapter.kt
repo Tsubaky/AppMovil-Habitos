@@ -14,12 +14,12 @@ class CalendarAdapter(
     private val onClick: (DayModel) -> Unit
 ) : RecyclerView.Adapter<CalendarAdapter.DayViewHolder>() {
 
-    private var selectedPosition = 0  // ⭐ NUEVO: Por defecto el primer día (hoy) está seleccionado
+    private var selectedPosition = 0  // Por defecto el primer día (hoy) está seleccionado
 
     inner class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvDayNumber: TextView = itemView.findViewById(R.id.tvDayNumber)
         val tvDayName: TextView = itemView.findViewById(R.id.tvDayName)
-        val container: View = itemView  // ⭐ NUEVO: Referencia al contenedor
+        val container: View = itemView  //Referencia al contenedor
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DayViewHolder {
@@ -33,7 +33,7 @@ class CalendarAdapter(
         holder.tvDayNumber.text = item.dayNumber.toString()
         holder.tvDayName.text = item.dayName
 
-// ⭐ NUEVO: Destacar el día seleccionado
+// Destacar el día seleccionado
         if (position == selectedPosition) {
             holder.container.setBackgroundResource(R.drawable.day_selected_background)  // ⭐ CAMBIO
             holder.tvDayName.setTextColor(Color.WHITE)
@@ -44,7 +44,7 @@ class CalendarAdapter(
             holder.tvDayNumber.setTextColor(Color.WHITE)
         }
 
-        // ⭐ NUEVO: Al hacer clic, actualizar selección
+        // Al hacer clic, actualizar selección
         holder.itemView.setOnClickListener {
             val previousPosition = selectedPosition
             selectedPosition = holder.adapterPosition

@@ -28,7 +28,7 @@ class StatisticsActivity : BaseSwipeActivity() {
 
         val username = getUsername()
         bottomNav = findViewById(R.id.bottomNavigation)
-        bottomNav.selectedItemId = R.id.nav_stats  // ⭐ AGREGAR ESTA LÍNEA
+        bottomNav.selectedItemId = R.id.nav_stats
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {

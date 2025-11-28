@@ -35,7 +35,7 @@ class HabitTimelineAdapter(
         holder.tvHabitName.text = h.name
         holder.tvEmojis.text = h.emojis
 
-        // ⭐ Mostrar hora (o "Todo el día" si no tiene)
+        // Mostrar hora
         holder.tvTime.text = if (h.time.isNotEmpty()) h.time else "--:--"
 
         holder.cbDone.setOnCheckedChangeListener(null)
