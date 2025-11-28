@@ -222,4 +222,164 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
         }
         return list
     }
+    // ⭐ ESTADÍSTICAS – COMPLETADOS POR DÍA (últimos 7 días)
+    fun getCompletedLast7Days(): List<Int> {
+        val db = readableDatabase
+        val result = IntArray(7) { 0 }
+
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        val calendar = java.util.Calendar.getInstance()
+
+        for (i in 0 until 7) {
+            val day = sdf.format(calendar.time)
+
+            val cursor = db.rawQuery(
+                "SELECT COUNT(*) FROM $TABLE_HABITS WHERE $COL_DATE = ? AND $COL_COMPLETED = 1",
+                arrayOf(day)
+            )
+            if (cursor.moveToFirst()) result[6 - i] = cursor.getInt(0)
+            cursor.close()
+
+            calendar.add(java.util.Calendar.DAY_OF_YEAR, -1)
+        }
+
+        return result.toList()
+    }
+
+    // ⭐ ESTADÍSTICAS – TOTAL COMPLETADOS
+    fun getTotalCompleted(): Int {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT COUNT(*) FROM $TABLE_HABITS WHERE $COL_COMPLETED = 1",
+            null
+        )
+        cursor.moveToFirst()
+        val count = cursor.getInt(0)
+        cursor.close()
+        return count
+    }
+
+    // ⭐ ESTADÍSTICAS – TOTAL PENDIENTES
+    fun getTotalPending(): Int {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT COUNT(*) FROM $TABLE_HABITS WHERE $COL_COMPLETED = 0",
+            null
+        )
+        cursor.moveToFirst()
+        val count = cursor.getInt(0)
+        cursor.close()
+        return count
+    }
+
+    fun getCompletionRateLast7Days(): Int {
+        val db = readableDatabase
+
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        val calendar = java.util.Calendar.getInstance()
+
+        // Obtener fecha de hace 7 días
+        calendar.add(java.util.Calendar.DAY_OF_YEAR, -6)
+        val startDate = sdf.format(calendar.time)
+
+        // Obtener fecha de hoy
+        calendar.add(java.util.Calendar.DAY_OF_YEAR, 6)
+        val endDate = sdf.format(calendar.time)
+
+        // Total de hábitos en esos 7 días
+        val cursorTotal = db.rawQuery(
+            "SELECT COUNT(*) FROM $TABLE_HABITS WHERE $COL_DATE BETWEEN ? AND ?",
+            arrayOf(startDate, endDate)
+        )
+        val total = if (cursorTotal.moveToFirst()) cursorTotal.getInt(0) else 0
+        cursorTotal.close()
+
+        // Hábitos completados en esos 7 días
+        val cursorCompleted = db.rawQuery(
+            "SELECT COUNT(*) FROM $TABLE_HABITS WHERE $COL_DATE BETWEEN ? AND ? AND $COL_COMPLETED = 1",
+            arrayOf(startDate, endDate)
+        )
+        val completed = if (cursorCompleted.moveToFirst()) cursorCompleted.getInt(0) else 0
+        cursorCompleted.close()
+
+        // Calcular porcentaje
+        return if (total == 0) 0 else ((completed.toFloat() / total.toFloat()) * 100).toInt()
+    }
+
+    // Obtiene todos los días únicos con al menos un hábito completado, ordenados
+    fun getDaysWithCompletedHabits(): List<String> {
+        val db = readableDatabase
+        val days = mutableListOf<String>()
+
+        val cursor = db.rawQuery(
+            "SELECT DISTINCT $COL_DATE FROM $TABLE_HABITS WHERE $COL_COMPLETED = 1 ORDER BY $COL_DATE ASC",
+            null
+        )
+
+        while (cursor.moveToNext()) {
+            days.add(cursor.getString(0))
+        }
+        cursor.close()
+
+        return days
+    }
+
+    // Calcula la racha actual (días consecutivos hasta hoy)
+    fun getCurrentStreak(): Int {
+        val days = getDaysWithCompletedHabits()
+        if (days.isEmpty()) return 0
+
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        val calendar = java.util.Calendar.getInstance()
+        val today = sdf.format(calendar.time)
+
+        // Si hoy no hay hábitos completados, la racha es 0
+        if (!days.contains(today)) return 0
+
+        var streak = 0
+        calendar.time = sdf.parse(today)!!
+
+        // Contar hacia atrás desde hoy
+        while (true) {
+            val checkDate = sdf.format(calendar.time)
+            if (days.contains(checkDate)) {
+                streak++
+                calendar.add(java.util.Calendar.DAY_OF_YEAR, -1)
+            } else {
+                break
+            }
+        }
+
+        return streak
+    }
+
+    // Calcula la racha más larga en toda la historia
+    fun getLongestStreak(): Int {
+        val days = getDaysWithCompletedHabits()
+        if (days.isEmpty()) return 0
+
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        var maxStreak = 1
+        var currentStreak = 1
+
+        for (i in 1 until days.size) {
+            val prevDate = sdf.parse(days[i - 1])!!
+            val currDate = sdf.parse(days[i])!!
+
+            val calendar = java.util.Calendar.getInstance()
+            calendar.time = prevDate
+            calendar.add(java.util.Calendar.DAY_OF_YEAR, 1)
+
+            // Si son días consecutivos
+            if (sdf.format(calendar.time) == days[i]) {
+                currentStreak++
+                maxStreak = maxOf(maxStreak, currentStreak)
+            } else {
+                currentStreak = 1
+            }
+        }
+
+        return maxStreak
+    }
+
 }
