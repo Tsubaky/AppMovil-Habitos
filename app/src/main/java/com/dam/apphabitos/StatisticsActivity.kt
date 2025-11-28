@@ -99,11 +99,19 @@ class StatisticsActivity : BaseSwipeActivity() {
         val tvLongestStreak = findViewById<TextView>(R.id.tvLongestStreak)
 
         val db = DBHelper(this)
-        val currentStreak = db.getCurrentStreak()
-        val longestStreak = db.getLongestStreak()
 
-        tvCurrentStreak.text = "$currentStreak días"
-        tvLongestStreak.text = "$longestStreak días"
+        try {
+            val currentStreak = db.getCurrentStreak()
+            val longestStreak = db.getLongestStreak()
+
+            tvCurrentStreak.text = "$currentStreak días"
+            tvLongestStreak.text = "$longestStreak días"
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // Valores por defecto en caso de error
+            tvCurrentStreak.text = "0 días"
+            tvLongestStreak.text = "0 días"
+        }
     }
 
     private fun setupBarChart() {

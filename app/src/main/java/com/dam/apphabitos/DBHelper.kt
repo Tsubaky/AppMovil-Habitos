@@ -312,12 +312,15 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
         val days = mutableListOf<String>()
 
         val cursor = db.rawQuery(
-            "SELECT DISTINCT $COL_DATE FROM $TABLE_HABITS WHERE $COL_COMPLETED = 1 ORDER BY $COL_DATE ASC",
+            "SELECT DISTINCT $COL_DATE FROM $TABLE_HABITS WHERE $COL_COMPLETED = 1 AND $COL_DATE != '' AND $COL_DATE IS NOT NULL ORDER BY $COL_DATE ASC",
             null
         )
 
         while (cursor.moveToNext()) {
-            days.add(cursor.getString(0))
+            val date = cursor.getString(0)
+            if (!date.isNullOrEmpty()) {  // Doble validación por seguridad
+                days.add(date)
+            }
         }
         cursor.close()
 
@@ -326,60 +329,72 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
 
     // Calcula la racha actual (días consecutivos hasta hoy)
     fun getCurrentStreak(): Int {
-        val days = getDaysWithCompletedHabits()
-        if (days.isEmpty()) return 0
+        return try {
+            val days = getDaysWithCompletedHabits()
+            if (days.isEmpty()) return 0
 
-        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
-        val calendar = java.util.Calendar.getInstance()
-        val today = sdf.format(calendar.time)
+            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+            val calendar = java.util.Calendar.getInstance()
+            val today = sdf.format(calendar.time)
 
-        // Si hoy no hay hábitos completados, la racha es 0
-        if (!days.contains(today)) return 0
+            // Si hoy no hay hábitos completados, la racha es 0
+            if (!days.contains(today)) return 0
 
-        var streak = 0
-        calendar.time = sdf.parse(today)!!
+            var streak = 0
+            calendar.time = sdf.parse(today)!!
 
-        // Contar hacia atrás desde hoy
-        while (true) {
-            val checkDate = sdf.format(calendar.time)
-            if (days.contains(checkDate)) {
-                streak++
-                calendar.add(java.util.Calendar.DAY_OF_YEAR, -1)
-            } else {
-                break
+            // Contar hacia atrás desde hoy
+            while (true) {
+                val checkDate = sdf.format(calendar.time)
+                if (days.contains(checkDate)) {
+                    streak++
+                    calendar.add(java.util.Calendar.DAY_OF_YEAR, -1)
+                } else {
+                    break
+                }
             }
-        }
 
-        return streak
+            streak
+        } catch (e: Exception) {
+            e.printStackTrace()
+            0 // Retorna 0 en caso de error
+        }
     }
 
     // Calcula la racha más larga en toda la historia
     fun getLongestStreak(): Int {
-        val days = getDaysWithCompletedHabits()
-        if (days.isEmpty()) return 0
+        return try {
+            val days = getDaysWithCompletedHabits()
+            if (days.isEmpty()) return 0
 
-        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
-        var maxStreak = 1
-        var currentStreak = 1
+            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+            var maxStreak = 1
+            var currentStreak = 1
 
-        for (i in 1 until days.size) {
-            val prevDate = sdf.parse(days[i - 1])!!
-            val currDate = sdf.parse(days[i])!!
+            for (i in 1 until days.size) {
+                val prevDate = sdf.parse(days[i - 1])
+                val currDate = sdf.parse(days[i])
 
-            val calendar = java.util.Calendar.getInstance()
-            calendar.time = prevDate
-            calendar.add(java.util.Calendar.DAY_OF_YEAR, 1)
+                if (prevDate == null || currDate == null) continue // Validación adicional
 
-            // Si son días consecutivos
-            if (sdf.format(calendar.time) == days[i]) {
-                currentStreak++
-                maxStreak = maxOf(maxStreak, currentStreak)
-            } else {
-                currentStreak = 1
+                val calendar = java.util.Calendar.getInstance()
+                calendar.time = prevDate
+                calendar.add(java.util.Calendar.DAY_OF_YEAR, 1)
+
+                // Si son días consecutivos
+                if (sdf.format(calendar.time) == days[i]) {
+                    currentStreak++
+                    maxStreak = maxOf(maxStreak, currentStreak)
+                } else {
+                    currentStreak = 1
+                }
             }
-        }
 
-        return maxStreak
+            maxStreak
+        } catch (e: Exception) {
+            e.printStackTrace()
+            0 // Retorna 0 en caso de error
+        }
     }
 
 }
