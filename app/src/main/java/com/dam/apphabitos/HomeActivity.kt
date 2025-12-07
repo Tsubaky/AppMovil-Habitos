@@ -1,7 +1,9 @@
 package com.dam.apphabitos
 
+import android.app.AlarmManager
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -10,10 +12,16 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.dam.apphabitos.model.Habit
+import com.dam.apphabitos.notifications.NotificationHelper
+import com.dam.apphabitos.notifications.SmartReminderWorker
 import java.util.Calendar
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class HomeActivity : BaseSwipeActivity() {
     private lateinit var bottomNav: BottomNavigationView
@@ -24,6 +32,7 @@ class HomeActivity : BaseSwipeActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        scheduleSmartReminders()
         setContentView(R.layout.activity_home)
         supportActionBar?.hide()
 
@@ -35,7 +44,7 @@ class HomeActivity : BaseSwipeActivity() {
         tvCounter = findViewById(R.id.tvCounter)
         rvHabits = findViewById(R.id.rvHabits)
 
-        adapter = HabitAdapter(mutableListOf()) { habit, isChecked ->
+        adapter = HabitAdapter(this,mutableListOf()) { habit, isChecked ->
             // Actualizar en la base de datos
             db.updateHabitCompleted(habit.id, if (isChecked) 1 else 0)
             habit.completed = if (isChecked) 1 else 0
@@ -65,6 +74,9 @@ class HomeActivity : BaseSwipeActivity() {
             }
             startActivity(intent)
         }
+
+//Registrar canales
+        NotificationHelper.createChannels(this)
 
         bottomNav = findViewById(R.id.bottomNavigation)
         bottomNav.selectedItemId = R.id.nav_home
@@ -101,6 +113,8 @@ class HomeActivity : BaseSwipeActivity() {
         }
     }
 
+
+
     override fun onResume() {
         super.onResume()
         loadHabitsFromDb()
@@ -121,6 +135,7 @@ class HomeActivity : BaseSwipeActivity() {
         //Actualizar contador
         updateCounterUI()
     }
+
 
     private fun showAddHabitDialog() {
         val inflater = LayoutInflater.from(this)
@@ -218,7 +233,10 @@ class HomeActivity : BaseSwipeActivity() {
         }
 
         dialog.show()
+
     }
+
+
 
     //NUEVO: Mostrar selector de emojis tipo WhatsApp
     private fun showEmojiPicker(emojis: List<String>, onEmojiSelected: (String) -> Unit) {
@@ -290,4 +308,20 @@ class HomeActivity : BaseSwipeActivity() {
         val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         tvDisplay.text = dateFormat.format(calendar.time)
     }
+
+    private fun scheduleSmartReminders() {
+
+        val request = PeriodicWorkRequestBuilder<SmartReminderWorker>(
+            24, TimeUnit.HOURS
+        ).build()
+
+        WorkManager.getInstance(this)
+            .enqueueUniquePeriodicWork(
+                "smart_reminders",
+                ExistingPeriodicWorkPolicy.UPDATE,
+                request
+            )
+    }
+
+
 }

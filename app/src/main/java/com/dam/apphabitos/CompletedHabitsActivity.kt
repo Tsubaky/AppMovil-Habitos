@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlin.collections.mutableListOf
 
 class CompletedHabitsActivity : AppCompatActivity() {
 
@@ -28,7 +29,7 @@ class CompletedHabitsActivity : AppCompatActivity() {
         rvCompletedHabits.layoutManager = LinearLayoutManager(this)
 
         // Adapter simple, sin funcionalidad de check
-        adapter = HabitAdapter(mutableListOf()) { habit, isChecked ->
+        adapter = HabitAdapter(this,mutableListOf()) { habit, isChecked ->
             // No hacemos nada, ya están completados
             db.updateHabitCompleted(habit.id, if (isChecked) 1 else 0)
         }
