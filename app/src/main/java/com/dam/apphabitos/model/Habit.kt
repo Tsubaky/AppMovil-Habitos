@@ -1,5 +1,6 @@
 package com.dam.apphabitos.model
 
+
 data class Habit(
     var id: Long = 0L,
     var name: String = "",
@@ -10,3 +11,5 @@ data class Habit(
     var time: String = "",
     var pomodoroMinutes: Int = 0
 )
+
+

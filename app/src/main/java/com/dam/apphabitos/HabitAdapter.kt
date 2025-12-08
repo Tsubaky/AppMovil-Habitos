@@ -1,6 +1,9 @@
 package com.dam.apphabitos
 
+import android.app.AlarmManager
 import android.app.AlertDialog
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -10,10 +13,18 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.dam.apphabitos.model.Habit
+import com.dam.apphabitos.notifications.HabitReminderReceiver
+import com.dam.apphabitos.notifications.NotificationHelper
+import com.dam.apphabitos.notifications.SnoozeReceiver
+import java.util.Calendar
 
 class HabitAdapter(
+
+    private val context: Context,
     private val items: MutableList<Habit>,
     private val onCheckedChanged: (habit: Habit, isChecked: Boolean) -> Unit
 ) : RecyclerView.Adapter<HabitAdapter.VH>() {
@@ -48,6 +59,8 @@ class HabitAdapter(
     }
 
     override fun getItemCount(): Int = items.size
+
+
 
     private fun showCompletionDialog(holder: VH, habit: Habit) {
         val context = holder.itemView.context
@@ -96,6 +109,8 @@ class HabitAdapter(
             }
         }
 
+
+
         //Click en Ir a Pomodoro
         btnPomodoro.setOnClickListener {
             checkBox.setOnCheckedChangeListener(null)
@@ -128,6 +143,7 @@ class HabitAdapter(
         dialog.show()
     }
 
+
     fun updateList(newList: List<Habit>) {
         items.clear()
         items.addAll(newList)
@@ -137,6 +153,10 @@ class HabitAdapter(
     fun add(habit: Habit) {
         items.add(0, habit)
         notifyItemInserted(0)
+
+        showHabitCreatedNotification(habit.name)
+        showHabitReminder(habit.name)
+
     }
 
     fun remove(habit: Habit) {
@@ -146,4 +166,66 @@ class HabitAdapter(
             notifyItemRemoved(index)
         }
     }
+    private fun parseTimeToCalendar(time: String): Calendar {
+        val parts = time.split(":")
+        val hour = parts[0].toInt()
+        val minute = parts[1].toInt()
+
+        return Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+
+            if (timeInMillis < System.currentTimeMillis()) {
+                add(Calendar.DAY_OF_YEAR, 1)
+            }
+        }
+    }
+
+
+    private fun showHabitCreatedNotification(habitName: String) {
+        // 'this' (el adapter) ya no se usa, usamos la propiedad 'context'
+        val builder = NotificationCompat.Builder(context, NotificationHelper.CHANNEL_HABIT_CREATED)
+            .setSmallIcon(android.R.drawable.checkbox_on_background)
+            .setContentTitle("Hábito creado")
+            .setContentText("El hábito \"$habitName\" fue registrado exitosamente")
+            .setAutoCancel(true)
+
+        NotificationManagerCompat.from(context)
+            .notify(System.currentTimeMillis().toInt(), builder.build())
+    }
+
+private fun showHabitReminder(habitName: String) {
+    // Intent para posponer
+    val snoozeIntent = Intent(context, SnoozeReceiver::class.java).apply {
+        putExtra("habitName", habitName)
+    }
+
+    val snoozePendingIntent = PendingIntent.getBroadcast(
+        context,
+        2001,
+        snoozeIntent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    val builder = NotificationCompat.Builder(context, NotificationHelper.CHANNEL_SMART_REMINDER)
+        .setSmallIcon(android.R.drawable.ic_popup_reminder)
+        .setContentTitle("Recordatorio de hábito")
+        .setContentText("¡Es hora de realizar: \"$habitName\"!")
+        .setAutoCancel(true)
+        .addAction(
+            android.R.drawable.ic_media_pause,
+            "Posponer 10 min",
+            snoozePendingIntent
+        )
+
+    NotificationManagerCompat.from(context)
+        .notify(System.currentTimeMillis().toInt(), builder.build())
+}
+
+
+
+
+
+
 }
