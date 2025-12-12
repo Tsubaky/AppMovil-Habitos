@@ -50,6 +50,19 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:buttonTint="#0B66C6"/>
+        <!-- Indicador GPS (agregar después del CheckBox) -->
+        <TextView
+            android:id="@+id/tvGPSIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📍 GPS"
+            android:textColor="#3B82F6"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:padding="8dp"
+            android:background="@drawable/bg_gps_badge"
+            android:layout_marginStart="8dp"/>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

@@ -33,6 +33,7 @@ class HabitAdapter(
         val tvEmojis: TextView = view.findViewById(R.id.tvEmojis)
         val tvHabitName: TextView = view.findViewById(R.id.tvHabitName)
         val cbDone: CheckBox = view.findViewById(R.id.cbDone)
+        val tvGPSIndicator: TextView? = view.findViewById(R.id.tvGPSIndicator) // Opcional
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -45,16 +46,40 @@ class HabitAdapter(
         holder.tvHabitName.text = h.name
         holder.tvEmojis.text = h.emojis
 
-        holder.cbDone.setOnCheckedChangeListener(null)
-        holder.cbDone.isChecked = (h.completed == 1)
+        // ========== NUEVA LÓGICA GPS ==========
+        if (h.gpsEnabled) {
+            // Si tiene GPS activado, ocultar checkbox y mostrar indicador
+            holder.cbDone.visibility = View.GONE
+            holder.tvGPSIndicator?.visibility = View.VISIBLE
+            holder.tvGPSIndicator?.text = "📍 GPS"
 
-        holder.cbDone.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                showCompletionDialog(holder, h)
-            } else {
-                h.completed = 0
-                onCheckedChanged(h, false)
+            // Click en el item abre el tracking
+            holder.itemView.setOnClickListener {
+                val context = holder.itemView.context
+                val intent = Intent(context, ExerciseTrackingActivity::class.java)
+                intent.putExtra("habitId", h.id)
+                intent.putExtra("habitName", "${h.emojis} ${h.name}")
+                context.startActivity(intent)
             }
+        } else {
+            // Comportamiento normal (sin GPS)
+            holder.cbDone.visibility = View.VISIBLE
+            holder.tvGPSIndicator?.visibility = View.GONE
+
+            holder.cbDone.setOnCheckedChangeListener(null)
+            holder.cbDone.isChecked = (h.completed == 1)
+
+            holder.cbDone.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    showCompletionDialog(holder, h)
+                } else {
+                    h.completed = 0
+                    onCheckedChanged(h, false)
+                }
+            }
+
+            // Quitar el click listener del item
+            holder.itemView.setOnClickListener(null)
         }
     }
 
@@ -89,7 +114,7 @@ class HabitAdapter(
         //Crear el diálogo
         val dialog = AlertDialog.Builder(context)
             .setView(dialogView)
-            .setCancelable(true)  //PERMITE CERRAR AL TOCAR FUERA
+            .setCancelable(true)
             .create()
 
         //Fondo transparente para ver el diseño personalizado

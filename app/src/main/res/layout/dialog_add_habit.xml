@@ -10,176 +10,34 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="24dp"
-        android:background="@drawable/dialog_background">
+            android:background="@drawable/dialog_background">
 
-        <!-- ⭐ Título del modal -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Nuevo Hábito"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:gravity="center"
-            android:layout_marginBottom="24dp" />
-
-        <!-- ⭐ Selector de Emoji (tipo WhatsApp) -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Emoji"
-            android:textStyle="bold"
-            android:textSize="14sp"
-            android:textColor="#B0B0B0"
-            android:layout_marginBottom="8dp" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/emojiSelector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:cardBackgroundColor="#2A2A2A"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="0dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground">
-
-            <LinearLayout
+            <!-- ⭐ Título del modal -->
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="16dp">
+                android:text="Nuevo Hábito"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:layout_marginBottom="24dp" />
 
-                <TextView
-                    android:id="@+id/tvSelectedEmoji"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="😊"
-                    android:textSize="32sp"
-                    android:layout_marginEnd="16dp"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Seleccionar emoji"
-                    android:textSize="16sp"
-                    android:textColor="#FFFFFF"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="▶"
-                    android:textSize="16sp"
-                    android:textColor="#9C27B0"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- ⭐ Nombre del hábito -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Nombre del Hábito"
-            android:textStyle="bold"
-            android:textSize="14sp"
-            android:textColor="#B0B0B0"
-            android:layout_marginBottom="8dp" />
-
-        <EditText
-            android:id="@+id/etHabitName"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:hint="Ej: Hacer ejercicio"
-            android:inputType="text"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:background="@drawable/input_background"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#666666"
-            android:layout_marginBottom="20dp" />
-
-        <!-- ⭐ Fecha y Hora -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Fecha y Hora"
-            android:textStyle="bold"
-            android:textSize="14sp"
-            android:textColor="#B0B0B0"
-            android:layout_marginBottom="8dp" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/btnSelectDateTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:cardBackgroundColor="#2A2A2A"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="0dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground">
-
-            <LinearLayout
+            <!-- ⭐ Selector de Emoji (tipo WhatsApp) -->
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="📅"
-                    android:textSize="24sp"
-                    android:layout_marginEnd="16dp"/>
-
-                <TextView
-                    android:id="@+id/tvDateTimeDisplay"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Selecciona fecha y hora"
-                    android:textSize="16sp"
-                    android:textColor="#FFFFFF"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- ⭐ Temporizador Pomodoro -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Temporizador Pomodoro (opcional)"
-            android:textStyle="bold"
-            android:textSize="14sp"
-            android:textColor="#B0B0B0"
-            android:layout_marginBottom="8dp" />
-
-        <Spinner
-            android:id="@+id/spinnerPomodoroMinutes"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@drawable/input_background"
-            android:layout_marginBottom="24dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp" />
-
-        <!-- ⭐ Botones de acción -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:weightSum="2">
+                android:text="Emoji"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#B0B0B0"
+                android:layout_marginBottom="8dp" />
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/btnCancel"
-                android:layout_width="0dp"
+                android:id="@+id/emojiSelector"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="20dp"
                 app:cardBackgroundColor="#2A2A2A"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
@@ -187,41 +45,222 @@
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Cancelar"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:gravity="center"
-                    android:padding="16dp"/>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvSelectedEmoji"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="😊"
+                        android:textSize="32sp"
+                        android:layout_marginEnd="16dp"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Seleccionar emoji"
+                        android:textSize="16sp"
+                        android:textColor="#FFFFFF"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="▶"
+                        android:textSize="16sp"
+                        android:textColor="#9C27B0"/>
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/btnAdd"
-                android:layout_width="0dp"
+            <!-- ⭐ Nombre del hábito -->
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                app:cardBackgroundColor="#9C27B0"
+                android:text="Nombre del Hábito"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#B0B0B0"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/etHabitName"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Ej: Hacer ejercicio"
+                android:inputType="text"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:background="@drawable/input_background"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#666666"
+                android:layout_marginBottom="20dp" />
+
+            <!-- ⭐ Fecha y Hora -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Fecha y Hora"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#B0B0B0"
+                android:layout_marginBottom="8dp" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btnSelectDateTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                app:cardBackgroundColor="#2A2A2A"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Añadir"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:gravity="center"
-                    android:padding="16dp"/>
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="16dp">
 
-    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📅"
+                        android:textSize="24sp"
+                        android:layout_marginEnd="16dp"/>
+
+                    <TextView
+                        android:id="@+id/tvDateTimeDisplay"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Selecciona fecha y hora"
+                        android:textSize="16sp"
+                        android:textColor="#FFFFFF"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- ⭐ Temporizador Pomodoro -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Temporizador Pomodoro (opcional)"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#B0B0B0"
+                android:layout_marginBottom="8dp" />
+
+            <Spinner
+                android:id="@+id/spinnerPomodoroMinutes"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/input_background"
+                android:layout_marginBottom="24dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp" />
+
+        <!-- Switch para GPS Tracking -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:background="#2D3748"
+            android:layout_marginTop="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📍 Trackear con GPS"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Para ejercicios (distancia, velocidad, calorías)"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switchGPS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"/>
+        </LinearLayout>
+            <!-- ⭐ Botones de acción -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:weightSum="2">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/btnCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardBackgroundColor="#2A2A2A"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Cancelar"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:gravity="center"
+                        android:padding="16dp"/>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/btnAdd"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardBackgroundColor="#9C27B0"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Añadir"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:gravity="center"
+                        android:padding="16dp"/>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+        </LinearLayout>
 </ScrollView>
