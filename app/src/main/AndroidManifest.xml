@@ -2,18 +2,30 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dam.apphabitos">
 
+    <!-- Permisos necesarios para GPS -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <!-- ✅ AGREGAR ESTA ACTIVIDAD -->
+        <activity
+            android:name=".ExerciseTrackingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".CompletedHabitsActivity"
             android:exported="false" />
         <activity
             android:name=".StatisticsActivity"
-            android:exported="false" /> <!-- Incluimos ambas Activities: Pomodoro y Calendar -->
+            android:exported="false" />
         <activity
             android:name=".PomodoroActivity"
             android:exported="false" />
@@ -28,7 +40,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

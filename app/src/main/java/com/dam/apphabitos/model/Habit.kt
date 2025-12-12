@@ -8,5 +8,6 @@ data class Habit(
     var createdAt: Long = System.currentTimeMillis(),
     var date: String = "",
     var time: String = "",
-    var pomodoroMinutes: Int = 0
+    var pomodoroMinutes: Int = 0,
+    var gpsEnabled: Boolean = false  // ← AGREGAR ESTA LÍNEA
 )
