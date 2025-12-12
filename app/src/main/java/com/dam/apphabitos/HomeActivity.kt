@@ -132,6 +132,7 @@ class HomeActivity : BaseSwipeActivity() {
         val btnSelectDateTime = view.findViewById<androidx.cardview.widget.CardView>(R.id.btnSelectDateTime)
         val tvDateTimeDisplay = view.findViewById<TextView>(R.id.tvDateTimeDisplay)
         val spinnerPomodoro = view.findViewById<Spinner>(R.id.spinnerPomodoroMinutes)
+        val switchGPS = view.findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.switchGPS) // ← NUEVO
         val btnAdd = view.findViewById<androidx.cardview.widget.CardView>(R.id.btnAdd)
         val btnCancel = view.findViewById<androidx.cardview.widget.CardView>(R.id.btnCancel)
 
@@ -152,7 +153,7 @@ class HomeActivity : BaseSwipeActivity() {
         //Mostrar fecha y hora inicial
         updateDateTimeDisplay(tvDateTimeDisplay, selectedTimestamp)
 
-        //lick en selector de emoji (tipo WhatsApp)
+        //Click en selector de emoji
         emojiSelector.setOnClickListener {
             showEmojiPicker(emojis) { selectedEmojiFromPicker ->
                 selectedEmoji = selectedEmojiFromPicker
@@ -191,6 +192,7 @@ class HomeActivity : BaseSwipeActivity() {
 
             val selectedPomodoroPosition = spinnerPomodoro.selectedItemPosition
             val pomodoroMinutes = pomodoroValues[selectedPomodoroPosition]
+            val gpsEnabled = switchGPS.isChecked // ← NUEVO
 
             val calendar = Calendar.getInstance().apply {
                 timeInMillis = selectedTimestamp
@@ -205,7 +207,8 @@ class HomeActivity : BaseSwipeActivity() {
                 createdAt = selectedTimestamp,
                 pomodoroMinutes = pomodoroMinutes,
                 date = dateFormat.format(calendar.time),
-                time = timeFormat.format(calendar.time)
+                time = timeFormat.format(calendar.time),
+                gpsEnabled = gpsEnabled // ← NUEVO
             )
 
             val id = db.insertHabit(habit)
